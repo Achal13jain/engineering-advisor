@@ -1,0 +1,140 @@
+[
+  {
+    "url": "https://docs.github.com/en/actions/concepts/security/openid-connect",
+    "title": "OpenID Connect",
+    "accessed": "2026-10-27",
+    "note": "No long-lived cloud secrets; short-lived token valid for a single job; trust conditions match subject claims, example repo:octo-org/octo-repo:environment:prod; repositories created after 15 July 2026 use an immutable subject format with owner and repository IDs"
+  },
+  {
+    "url": "https://docs.github.com/en/actions/reference/security/secure-use",
+    "title": "Secure use reference",
+    "accessed": "2026-10-27",
+    "note": "Pin actions to a commit SHA, or lock workflow dependencies with a lockfile which supersedes SHA pinning; least privilege GITHUB_TOKEN; avoid pull_request_target unless necessary"
+  },
+  {
+    "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments",
+    "title": "Deployments and environments",
+    "accessed": "2026-10-27",
+    "note": "Up to six required reviewers, one approval suffices, initiator cannot approve own deployment; environment secrets only after approval; on Free, Pro and Team required reviewers and wait timers only in public repositories"
+  },
+  {
+    "url": "https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference",
+    "title": "Dependabot options reference",
+    "accessed": "2026-10-27",
+    "note": "ecosystem values npm, pip, uv, github-actions, docker; schedule interval/day/time/timezone/cronjob; groups; cooldown; open-pull-requests-limit default 5, security 10; commit-message; labels"
+  },
+  {
+    "url": "https://docs.github.com/en/get-started/using-github/github-flow",
+    "title": "GitHub flow",
+    "accessed": "2026-10-27",
+    "note": "A lightweight, branch-based workflow: create branch, make changes, open pull request, address review comments, merge, delete branch."
+  },
+  {
+    "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks",
+    "title": "Troubleshooting required status checks",
+    "accessed": "2026-10-27",
+    "note": "Workflows skipped by path filtering, branch filtering or a commit message: associated checks stay Pending and block merging; avoid requiring workflows that can be skipped. A job skipped by a conditional reports Success"
+  },
+  {
+    "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets",
+    "title": "About rulesets",
+    "accessed": "2026-10-27",
+    "note": "rulesets aggregate, most restrictive wins, layer with branch protection, active/disabled, bypass list, visible to anyone with read access"
+  },
+  {
+    "url": "https://dora.dev/guides/dora-metrics",
+    "title": "DORA's software delivery performance metrics",
+    "accessed": "2026-10-27",
+    "note": "Five metrics. Throughput: change lead time, deployment frequency, failed deployment recovery time. Instability: change fail rate, deployment rework rate. Page last updated 5 January 2026."
+  },
+  {
+    "url": "https://genai.owasp.org/llm-top-10",
+    "title": "OWASP Top 10 for LLM Applications 2025",
+    "accessed": "2026-10-27",
+    "note": "2025 edition: LLM01 Prompt Injection ... LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector and Embedding Weaknesses, LLM10 Unbounded Consumption"
+  },
+  {
+    "url": "https://github.com/nodejs/Release",
+    "title": "Node.js Release Working Group repository",
+    "accessed": "2026-10-27",
+    "note": "Read directly while building the skill (not a playbook source); release schedule and LTS policy."
+  },
+  {
+    "url": "https://keepachangelog.com/en/1.1.0",
+    "title": "Keep a Changelog 1.1.0",
+    "accessed": "2026-10-27",
+    "note": "changelogs are for humans; Unreleased section at top; change types Added, Changed, Deprecated, Removed, Fixed, Security; do not dump git logs"
+  },
+  {
+    "url": "https://martinfowler.com/articles/continuousIntegration.html",
+    "title": "Continuous Integration",
+    "accessed": "2026-10-27",
+    "note": "Each member merges changes into the shared codebase at least daily; each integration verified by an automated build with tests. Updated 18 January 2024."
+  },
+  {
+    "url": "https://martinfowler.com/articles/feature-toggles.html",
+    "title": "Feature Toggles (aka Feature Flags), by Pete Hodgson",
+    "accessed": "2026-10-27",
+    "note": "release, experiment, ops and permissioning toggles; release toggles short-lived; toggles are inventory with carrying cost; removal tasks and expiry dates"
+  },
+  {
+    "url": "https://martinfowler.com/bliki/ContinuousDelivery.html",
+    "title": "Continuous Delivery",
+    "accessed": "2026-10-27",
+    "note": "CD: software can be released to production at any time. Continuous deployment: every change goes to production automatically. CD is a prerequisite for continuous deployment. 30 May 2013."
+  },
+  {
+    "url": "https://martinfowler.com/bliki/ParallelChange.html",
+    "title": "ParallelChange, by Danilo Sato",
+    "accessed": "2026-10-27",
+    "note": "expand, migrate, contract phases for backward-incompatible interface changes; skipping contract leaves you worse off"
+  },
+  {
+    "url": "https://nvie.com/posts/a-successful-git-branching-model",
+    "title": "A successful Git branching model (note of reflection, 5 March 2020)",
+    "accessed": "2026-10-27",
+    "note": "Author says teams doing continuous delivery should adopt a much simpler workflow such as GitHub flow; git-flow may still fit explicitly versioned software or multiple supported versions."
+  },
+  {
+    "url": "https://semver.org",
+    "title": "Semantic Versioning 2.0.0",
+    "accessed": "2026-10-27",
+    "note": "MAJOR incompatible API changes, MINOR backward compatible functionality, PATCH backward compatible fixes; 0.y.z anything may change; deprecate in a minor release before removal in a major"
+  },
+  {
+    "url": "https://sre.google/sre-book/managing-incidents",
+    "title": "Site Reliability Engineering, Chapter 14: Managing Incidents",
+    "accessed": "2026-10-27",
+    "note": "roles incident command, operational work, communication, planning; declare early; criteria"
+  },
+  {
+    "url": "https://sre.google/sre-book/monitoring-distributed-systems",
+    "title": "Site Reliability Engineering, Chapter 6: Monitoring Distributed Systems",
+    "accessed": "2026-10-27",
+    "note": "four golden signals latency, traffic, errors, saturation; every page should be actionable; frequent pages get ignored"
+  },
+  {
+    "url": "https://sre.google/sre-book/postmortem-culture",
+    "title": "Site Reliability Engineering, Chapter 15: Postmortem Culture",
+    "accessed": "2026-10-27",
+    "note": "blameless definition; triggers; contents"
+  },
+  {
+    "url": "https://top10.owasp.org/2025",
+    "title": "OWASP Top 10:2025",
+    "accessed": "2026-10-27",
+    "note": "A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging and Alerting Failures, A10 Mishandling of Exceptional Conditions"
+  },
+  {
+    "url": "https://trunkbaseddevelopment.com",
+    "title": "Trunk Based Development",
+    "accessed": "2026-10-27",
+    "note": "Developers collaborate on a single branch called trunk and resist long-lived branches; short-lived feature branches reviewed and built before landing."
+  },
+  {
+    "url": "https://www.conventionalcommits.org/en/v1.0.0",
+    "title": "Conventional Commits 1.0.0",
+    "accessed": "2026-10-27",
+    "note": "type(scope): description; fix to PATCH, feat to MINOR, BREAKING CHANGE or ! to MAJOR"
+  }
+]

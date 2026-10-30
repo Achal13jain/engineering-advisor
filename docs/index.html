@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Engineering Advisor</title>
+<meta name="description" content="An open-source agent skill that classifies a software project by family, risk and maturity, then recommends the right amount of engineering process and a phased plan.">
+<meta property="og:title" content="Project Engineering Advisor">
+<meta property="og:description" content="The right amount of engineering process for the project you actually have. An open-source agent skill for Claude Code and other Agent Skills tools.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f5f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1420" media="(prefers-color-scheme: dark)">
+<link rel="preload" href="fonts/ibm-plex-sans-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1.5' y='1.5' width='29' height='29' rx='7' fill='%235B8CFF' stroke='%23111111' stroke-width='3'/%3E%3Cpath d='m16 7 10 5-10 5-10-5zM6 16.5l10 5 10-5M6 21l10 5 10-5' fill='none' stroke='%23111111' stroke-width='2.2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>try { var t = localStorage.getItem("pea-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<style>
+@font-face { font-family: "IBM Plex Sans"; src: url("fonts/ibm-plex-sans-latin-wght.woff2") format("woff2"); font-weight: 100 700; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/ibm-plex-mono-latin-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+:root {
+  color-scheme: light dark;
+  --paper: #f5f5f1;
+  --card: #ffffff;
+  --ink: #111111;
+  --ink-soft: #464646;
+  --line: #111111;
+  --shade: #111111;
+  --dots: rgba(17, 17, 17, 0.09);
+  --blue: #5b8cff;
+  --yellow: #ffd43b;
+  --mint: #7be0a4;
+  --coral: #ff8577;
+  --lilac: #b8a8ff;
+  --orange: #ffaa5c;
+  --on-fill: #111111;
+  --blue-soft: #e3ecff;
+  --yellow-soft: #fff4c2;
+  --mint-soft: #ddf7e8;
+  --coral-soft: #ffe4e0;
+  --lilac-soft: #ede8ff;
+  --mint-ink: #12703f;
+  --coral-ink: #b42f22;
+  --link: #1f4fd1;
+  --code-bg: #111111;
+  --code-head: #2a2a2a;
+  --code-rule: #3d3d3d;
+  --code-ink: #f2f2f2;
+  --code-label: #b8b8b8;
+  --focus: #1f4fd1;
+  --bw: 2px;
+  --sh: 4px 4px 0 var(--shade);
+  --sh-sm: 3px 3px 0 var(--shade);
+  --r: 0.75rem;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1420;
+    --card: #182031;
+    --ink: #f2f4f8;
+    --ink-soft: #c2c9d6;
+    --line: #e4e8f0;
+    --shade: #5b8cff;
+    --dots: rgba(160, 176, 204, 0.14);
+    --blue-soft: #1c2b4d;
+    --yellow-soft: #3b3416;
+    --mint-soft: #173628;
+    --coral-soft: #3e211d;
+    --lilac-soft: #2b2547;
+    --mint-ink: #7be0a4;
+    --coral-ink: #ff8577;
+    --link: #93b4ff;
+    --code-bg: #0a0e17;
+    --code-head: #1b2436;
+    --code-rule: #2c3852;
+    --code-label: #a8a8a8;
+    --focus: #93b4ff;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0f1420;
+  --card: #182031;
+  --ink: #f2f4f8;
+  --ink-soft: #c2c9d6;
+  --line: #e4e8f0;
+  --shade: #5b8cff;
+  --dots: rgba(160, 176, 204, 0.14);
+  --blue-soft: #1c2b4d;
+  --yellow-soft: #3b3416;
+  --mint-soft: #173628;
+  --coral-soft: #3e211d;
+  --lilac-soft: #2b2547;
+  --mint-ink: #7be0a4;
+  --coral-ink: #ff8577;
+  --link: #93b4ff;
+  --code-bg: #0a0e17;
+  --code-head: #1b2436;
+  --code-rule: #2c3852;
+  --code-label: #a8a8a8;
+  --focus: #93b4ff;
+}
+:root[data-theme="light"] { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
+body { margin: 0; background: var(--paper) radial-gradient(var(--dots) 1px, transparent 1.4px) 0 0 / 22px 22px; color: var(--ink); font: 400 1.0625rem/1.6 var(--sans); }
+a { color: var(--link); text-underline-offset: 0.18em; text-decoration-thickness: 1.5px; }
+a:hover { text-decoration-thickness: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3, h4 { line-height: 1.12; margin: 0; text-wrap: balance; font-weight: 700; }
+h2 { font-size: clamp(1.875rem, 3.6vw, 2.75rem); letter-spacing: -0.02em; }
+h3 { font-size: 1.1875rem; letter-spacing: -0.01em; }
+h4 { font-size: 0.9375rem; }
+p { margin: 0 0 1em; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+code, pre { font-family: var(--mono); font-size: 0.875em; }
+p code, li > span code { background: var(--blue-soft); border: 1.5px solid var(--line); padding: 0 0.3em; border-radius: 0.25rem; }
+.wrap { max-width: 78rem; margin: 0 auto; padding: 0 1.25rem; }
+.skip { position: absolute; left: 1rem; top: -4rem; background: var(--blue); color: var(--on-fill); padding: 0.6rem 1rem; border: var(--bw) solid var(--line); z-index: 20; }
+.skip:focus { top: 1rem; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ic { width: 1.25rem; height: 1.25rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.card { background: var(--card); border: var(--bw) solid var(--line); border-radius: var(--r); box-shadow: var(--sh); }
+section, .hero { scroll-margin-top: 4.5rem; }
+
+/* Everything you can press lifts on hover and sinks on click. */
+.btn, .copy, [role="tab"], .flow-play, .ex-switch button, .phases button { transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease; }
+.btn:hover, .copy:hover, [role="tab"]:hover, .flow-play:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--shade); }
+.btn:active, .copy:active, [role="tab"]:active, .flow-play:active, .ex-switch button:active, .phases button:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--shade); }
+
+.top { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: var(--bw) solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 2rem; min-height: 4.25rem; }
+.brand { display: inline-flex; align-items: center; gap: 0.7rem; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 1.0625rem; letter-spacing: -0.01em; margin-right: auto; }
+.logo { width: 2.25rem; height: 2.25rem; border-radius: 0.55rem; background: var(--blue); color: var(--on-fill); border: var(--bw) solid var(--line); display: grid; place-items: center; flex: none; }
+.top nav { display: flex; gap: 1.75rem; }
+.top nav a { color: var(--ink); text-decoration: none; font-size: 0.9375rem; font-weight: 600; padding: 0.4rem 0; border-bottom: 3px solid transparent; }
+.top nav a:hover { border-bottom-color: var(--blue); }
+.btn { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.875rem; padding: 0 1.25rem; border-radius: 0.6rem; font-weight: 700; text-decoration: none; color: var(--ink); background: var(--card); border: var(--bw) solid var(--line); box-shadow: var(--sh-sm); }
+.btn-primary { background: var(--blue); color: var(--on-fill); }
+.btn-sm { min-height: 2.5rem; padding: 0 1rem; font-size: 0.9375rem; }
+.top-actions { display: flex; gap: 0.6rem; }
+.theme-toggle { width: 2.5rem; padding: 0; justify-content: center; cursor: pointer; font: inherit; }
+.theme-toggle[hidden] { display: none; }
+
+.hero { padding-block: clamp(1.25rem, 3vw, 2rem) 0; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 3rem; align-items: start; }
+/* The heading scales with its column so the name always fits on two lines. */
+.hero-grid > :first-child { container-type: inline-size; padding-top: 1rem; }
+.badges { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+.badge { font-size: 0.875rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 0.4rem; border: var(--bw) solid var(--line); color: var(--on-fill); }
+.badge-mint { background: var(--mint); }
+.badge-lilac { background: var(--lilac); }
+.hero h1 { font-size: clamp(2.25rem, 10.8cqi, 3.75rem); letter-spacing: -0.025em; line-height: 1.04; }
+.tagline { font-size: clamp(1.375rem, 2.3vw, 1.75rem); line-height: 1.3; letter-spacing: -0.01em; margin: 1.25rem 0 1rem; }
+.lede { color: var(--ink-soft); max-width: 32rem; margin-bottom: 2rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.9rem; }
+
+.flow { --arrow: rotate(45deg); margin: 0; padding: 1rem; border-radius: var(--r); width: 100%; }
+.flow-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 1rem; }
+.flow-bar[hidden] { display: none; }
+.ex-switch { display: inline-flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.25rem; background: var(--card); border: var(--bw) solid var(--line); border-radius: 0.7rem; box-shadow: var(--sh-sm); }
+.ex-switch button, .flow-play { position: relative; overflow: hidden; font: 700 0.8125rem/1.2 var(--sans); color: var(--ink); background: none; border: var(--bw) solid transparent; border-radius: 0.5rem; padding: 0.4rem 0.75rem; min-height: 2.25rem; cursor: pointer; }
+.ex-switch button:hover { background: var(--blue-soft); }
+.ex-switch [aria-pressed="true"], .ex-switch [aria-pressed="true"]:hover { background: var(--blue); color: var(--on-fill); border-color: var(--line); }
+.bar { position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: var(--on-fill); }
+.flow.auto [aria-pressed="true"] > .bar { animation: fill 9s linear forwards; }
+.flow.off .bar { animation-play-state: paused; }
+.flow-play { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--card); border-color: var(--line); box-shadow: var(--sh-sm); }
+.flow-play .ic { width: 0.95rem; height: 0.95rem; }
+/* One window with three panes: the panes share a frame, so they are always the same height. */
+.flow-window { overflow: hidden; }
+.flow-row { display: grid; grid-template-columns: 1fr 1.05fr 1.15fr; align-items: stretch; }
+.flow-row > .fcard + .fcard { border-left: var(--bw) solid var(--line); }
+.fcard { position: relative; padding: 0.85rem 0.95rem; font-size: 0.75rem; line-height: 1.35; }
+.flow-row > .fcard:not(:last-child)::after { content: ""; position: absolute; z-index: 2; top: 1rem; right: calc(-0.4rem - 1px); width: 0.7rem; height: 0.7rem; background: var(--card); border-top: 2.5px solid var(--line); border-right: 2.5px solid var(--line); transform: var(--arrow); }
+.flow-row > .fcard.flowing::after { animation: nudge 0.4s ease-in-out 3; }
+.ftitle { display: flex; align-items: center; gap: 0.45rem; font-size: 0.8125rem; font-weight: 700; margin: 0 0 0.6rem; }
+.ftitle .logo { width: 1.5rem; height: 1.5rem; border-radius: 0.4rem; border-width: 1.5px; }
+.ftitle .logo .ic, .ftitle > .ic { width: 0.9rem; height: 0.9rem; }
+.inputs li { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem; border-radius: 0.4rem; }
+.inputs small { display: block; font-size: 0.6875rem; color: var(--ink-soft); }
+.inputs .ic { width: 0.95rem; height: 0.95rem; }
+.fsteps li { display: flex; align-items: center; gap: 0.45rem; padding: 0.28rem 0.4rem; border: 1.5px solid transparent; border-radius: 0.45rem; transition: background-color 0.25s, border-color 0.25s; }
+.fsteps b { width: 1.3rem; height: 1.3rem; border-radius: 0.3rem; background: var(--card); border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 0.6875rem; flex: none; transition: background-color 0.25s, color 0.25s; }
+.fsteps .done b { background: var(--mint); color: var(--on-fill); }
+.fsteps .on { background: var(--blue); color: var(--on-fill); border-color: var(--line); font-weight: 700; }
+.fsteps .on b { background: var(--on-fill); color: var(--blue); border-color: var(--on-fill); }
+.phases { display: flex; gap: 0.3rem; margin: 0 0 0.6rem; }
+.phases span, .phases button { white-space: nowrap; padding: 0.15rem 0.45rem; border-radius: 0.35rem; color: var(--ink); font: 700 0.6875rem/1.4 var(--sans); background: var(--card); border: 1.5px solid var(--line); }
+.phases button { cursor: pointer; min-height: 1.6rem; }
+.phases button:hover { background: var(--blue-soft); }
+.phases .on, .phases [aria-pressed="true"], .phases [aria-pressed="true"]:hover { background: var(--blue); color: var(--on-fill); }
+.yes li, .no li { display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.2rem 0; }
+.yes .ic, .no .ic { width: 1.05rem; height: 1.05rem; margin-top: 0.05rem; }
+.fcard .yes .ic, .fcard .no .ic { width: 0.95rem; height: 0.95rem; }
+.yes .ic { color: var(--mint); }
+.no .ic { color: var(--coral); }
+.fcard .yes.later .ic { color: var(--ink); }
+.fcard .yes small { display: block; color: var(--ink-soft); font-size: 0.6875rem; }
+.fcard hr { border: 0; border-top: 1.5px solid var(--line); margin: 0.55rem 0; }
+.flabel { font-weight: 700; margin: 0 0 0.35rem; }
+.fclass { border-top: var(--bw) solid var(--line); padding: 0.7rem 0.95rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 1rem; align-items: center; background: var(--paper); font-size: 0.75rem; }
+.fclass > p { margin: 0; font-weight: 700; }
+.fclass div { display: grid; gap: 0.3rem; justify-items: start; }
+.fclass .chip { font-size: 0.75rem; padding: 0.15rem 0.5rem; white-space: nowrap; }
+.flow figcaption { margin-top: 0.6rem; font-size: 0.8125rem; color: var(--ink-soft); }
+.flow .stale { opacity: 0.3; transition: opacity 0.25s; }
+.inputs.anim li, .plan-body.anim li { animation: rise 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+.fclass.anim .chip { animation: pop 0.35s cubic-bezier(0.2, 0.7, 0.3, 1.4) both; animation-delay: calc(var(--i, 0) * 80ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.8); } }
+@keyframes fill { to { width: 100%; } }
+@keyframes nudge { 50% { transform: var(--arrow) translate(3px, -3px); } }
+@media (prefers-reduced-motion: reduce) { .flow *, .flow *::after { animation: none !important; } }
+
+.chip { display: inline-block; font-size: 0.8125rem; line-height: 1.3; padding: 0.2rem 0.55rem; border-radius: 0.4rem; font-weight: 700; border: 1.5px solid var(--line); color: var(--on-fill); }
+.chip-fam { background: var(--card); color: var(--ink); }
+.chip-low { background: var(--mint); }
+.chip-mod { background: var(--yellow); }
+.chip-high { background: var(--coral); }
+.chip-stage { background: var(--lilac); }
+
+.band { padding: clamp(3rem, 7vw, 5.5rem) 0; }
+.band + .band { padding-top: 0; }
+.band-beliefs { padding: 0.75rem 0 2.75rem; }
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 25rem); gap: 1.5rem 3rem; align-items: center; margin-bottom: 2.25rem; }
+.head-solo { grid-template-columns: minmax(0, 46rem); }
+.eyebrow { display: inline-block; background: var(--blue); color: var(--on-fill); border: var(--bw) solid var(--line); border-radius: 0.4rem; box-shadow: 2px 2px 0 var(--shade); padding: 0.1rem 0.55rem; font-weight: 700; font-size: 0.875rem; margin-bottom: 1rem; }
+.intro { color: var(--ink-soft); font-size: 1.125rem; margin: 1rem 0 0; max-width: 44rem; }
+
+.beliefs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.belief { display: flex; gap: 1rem; padding: 1.25rem 1.4rem; border-radius: var(--r); background: var(--blue-soft); border: var(--bw) solid var(--line); box-shadow: var(--sh-sm); }
+.belief + .belief { background: var(--lilac-soft); }
+.belief > .ic { width: 2.25rem; height: 2.25rem; padding: 0.4rem; border-radius: 0.6rem; background: var(--blue); color: var(--on-fill); border: var(--bw) solid var(--line); stroke-width: 1.8; }
+.belief + .belief > .ic { background: var(--lilac); }
+.belief h3 { font-size: 1.1875rem; letter-spacing: -0.01em; margin-bottom: 0.3rem; }
+.belief p { color: var(--ink-soft); margin: 0; max-width: 34rem; font-size: 0.9375rem; line-height: 1.55; }
+
+.tile { width: 2.75rem; height: 2.75rem; border-radius: 0.6rem; display: grid; place-items: center; flex: none; background: var(--blue); color: var(--on-fill); border: var(--bw) solid var(--line); }
+.tile .ic { width: 1.35rem; height: 1.35rem; }
+.tile-lilac { background: var(--lilac); }
+.tile-mint { background: var(--mint); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; }
+.ex-tabs .tablist { grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+.ex-tabs [role="tab"] { align-items: stretch; gap: 0.9rem; padding: 1rem; min-height: 0; }
+.ex-tabs [role="tab"] .tile { width: 2.5rem; height: 2.5rem; }
+.ex-tab-text { display: flex; flex-direction: column; gap: 0.7rem; }
+.ex-tabs [role="tab"] strong { font-size: 1rem; line-height: 1.3; }
+.ex-tabs [role="tab"] .chips { margin-top: auto; }
+.ex-tabs .short { display: none; }
+.ex-panel { padding: 1.5rem; }
+.ex-lede { color: var(--ink-soft); margin: 0 0 1.25rem; }
+.js .panel-chips { display: none; }
+.panel-chips { margin-bottom: 1.25rem; }
+.areas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.area { border: var(--bw) solid var(--line); border-radius: 0.6rem; padding: 1rem 1.1rem; background: var(--paper); font-size: 0.9375rem; }
+.area p { margin: 0; }
+.area .area-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; font-weight: 700; margin-bottom: 0.5rem; }
+.area-head .ic { width: 1.15rem; height: 1.15rem; }
+.area-head small { margin-left: auto; font-size: 0.75rem; font-weight: 700; padding: 0.05rem 0.45rem; border: 1.5px solid var(--line); border-radius: 0.35rem; background: var(--card); }
+.area code { background: var(--blue-soft); border: 1.5px solid var(--line); padding: 0 0.3em; border-radius: 0.25rem; }
+.area-out { background: var(--coral-soft); }
+.area-out .no li { padding: 0.1rem 0; }
+.area-out .no .ic { color: var(--coral-ink); }
+.ex-point { display: flex; gap: 0.75rem; align-items: flex-start; margin-top: 1rem; padding: 1rem 1.1rem; border-radius: 0.6rem; background: var(--blue-soft); border: var(--bw) solid var(--line); }
+.ex-point p { margin: 0; }
+.ex-point .ic { margin-top: 0.15rem; }
+.ex-panel:not([hidden]) .area, .ex-panel:not([hidden]) .ex-point { animation: rise 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+@media (prefers-reduced-motion: reduce) { .area, .ex-point { animation: none !important; } }
+.takeaway { margin: 2rem 0 0; max-width: 48rem; padding-left: 1rem; border-left: 4px solid var(--blue); }
+
+
+
+
+
+.spec { overflow: hidden; }
+.spec-row { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem 2rem; align-items: center; padding: 1.1rem 1.4rem; }
+.spec-row + .spec-row { border-top: var(--bw) solid var(--line); }
+.spec-label { display: flex; gap: 0.75rem; align-items: flex-start; }
+.spec-label .ic { width: 1.6rem; height: 1.6rem; margin-top: 0.1rem; }
+.spec-label h3 { font-size: 1.0625rem; }
+.spec-label p { margin: 0.15rem 0 0; font-size: 0.875rem; color: var(--ink-soft); }
+.spec-scale { display: grid; gap: 0.5rem; }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.seg { padding: 0.55rem 0.7rem; border: 1.5px solid var(--line); border-radius: 0.5rem; font-size: 0.8125rem; line-height: 1.35; background: var(--lilac-soft); color: var(--ink-soft); }
+.seg strong { display: block; font-size: 0.875rem; color: var(--ink); }
+.seg-low, .seg-mod, .seg-high, .seg-crit, .seg-low strong, .seg-mod strong, .seg-high strong, .seg-crit strong { color: var(--on-fill); }
+.seg-low { background: var(--mint); }
+.seg-mod { background: var(--yellow); }
+.seg-high { background: var(--orange); }
+.seg-crit { background: var(--coral); }
+.spec-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.spec-tags li { padding: 0.25rem 0.6rem; border: 1.5px solid var(--line); border-radius: 0.4rem; font-size: 0.8125rem; font-weight: 600; background: var(--paper); }
+.spec-tags .more { border-style: dashed; color: var(--ink-soft); }
+.prompts { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1.25rem; }
+.prompt { position: relative; padding: 1.25rem; padding-right: 4.25rem; font-size: 0.9375rem; box-shadow: var(--sh-sm); }
+.prompt > .ic { margin-bottom: 0.6rem; display: block; }
+.prompt q { quotes: "\201C" "\201D"; }
+.copy { display: inline-grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.5rem; cursor: pointer; background: var(--card); color: var(--ink); border: var(--bw) solid var(--line); box-shadow: 2px 2px 0 var(--shade); }
+.copy .ic { width: 1.1rem; height: 1.1rem; }
+.prompt .copy { position: absolute; top: 0.9rem; right: 0.9rem; }
+.copy.done { background: var(--mint); color: var(--on-fill); }
+
+.notice { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.9rem 1.1rem; border-radius: 0.6rem; background: var(--yellow-soft); border: var(--bw) solid var(--line); margin: 0 0 1.5rem; }
+.notice .ic { margin-top: 0.15rem; }
+.notice p { margin: 0; }
+.tablist { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+.tablist[hidden] { display: none; }
+[role="tab"] { display: flex; align-items: center; gap: 0.75rem; text-align: left; font: inherit; color: var(--ink); background: var(--card); border: var(--bw) solid var(--line); border-radius: 0.6rem; box-shadow: var(--sh-sm); padding: 0.75rem 0.9rem; cursor: pointer; min-height: 3.5rem; }
+[role="tab"][aria-selected="true"] { background: var(--blue); color: var(--on-fill); }
+[role="tab"] .ic { width: 1.6rem; height: 1.6rem; }
+[role="tab"] strong { display: block; font-size: 0.9375rem; line-height: 1.25; }
+[role="tab"] small { display: block; color: var(--ink-soft); font-size: 0.8125rem; line-height: 1.3; }
+[role="tab"][aria-selected="true"] small { color: var(--on-fill); }
+.panel { padding: clamp(1.25rem, 3vw, 2rem); }
+.panel + .panel { margin-top: 1.25rem; }
+.js .panel[hidden] { display: none; }
+.js .panel + .panel { margin-top: 0; }
+.panel > h3 { margin-bottom: 1rem; }
+.js .panel > h3 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.panel p { max-width: 46rem; }
+.route + .route { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1.5px dashed var(--line); }
+.route h4 { font-size: 1.0625rem; margin-bottom: 0.85rem; }
+.tip { padding: 0.7rem 0.9rem; border: 1.5px solid var(--line); border-radius: 0.5rem; background: var(--blue-soft); }
+.isteps { counter-reset: s; max-width: 48rem; }
+.isteps > li { counter-increment: s; position: relative; padding-left: 2.75rem; margin-bottom: 1.25rem; }
+.isteps > li::before { content: counter(s); position: absolute; left: 0; top: -0.1rem; width: 1.9rem; height: 1.9rem; border-radius: 0.4rem; display: grid; place-items: center; font-weight: 700; font-size: 0.875rem; background: var(--mint); color: var(--on-fill); border: 1.5px solid var(--line); }
+.isteps p { margin-bottom: 0.5rem; }
+.code { background: var(--code-bg); border-radius: 0.5rem; margin: 0 0 0.75rem; max-width: 48rem; border: var(--bw) solid var(--line); overflow: hidden; }
+.code-head { display: flex; align-items: center; justify-content: space-between; min-height: 2.25rem; padding: 0.3rem 0.4rem 0.3rem 1rem; background: var(--code-head); border-bottom: 1.5px solid var(--code-rule); color: var(--code-label); font-size: 0.8125rem; font-weight: 600; }
+.code .copy { width: 2.25rem; height: 2.25rem; color: var(--code-label); background: transparent; border: 1.5px solid rgba(242, 242, 242, 0.35); box-shadow: none; }
+.code .copy:hover { color: var(--code-ink); border-color: var(--code-ink); transform: none; box-shadow: none; }
+.code .copy.done { color: var(--on-fill); background: var(--mint); border-color: var(--mint); }
+.code pre { margin: 0; padding: 0.85rem 1rem; overflow-x: auto; color: var(--code-ink); line-height: 1.55; }
+.code code { font-size: 1em; }
+
+.trust { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; align-items: start; }
+.trust > div, .trust > aside { padding: 1.75rem; }
+.trust-head { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 1.25rem; }
+.trust-head .ic { width: 2rem; height: 2rem; }
+.trust-head h2 { font-size: clamp(1.375rem, 2.4vw, 1.75rem); }
+.trust .yes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem; font-size: 0.9375rem; }
+.trust .yes .ic { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; }
+.status { background: var(--mint-soft); }
+.status p { color: var(--ink-soft); font-size: 0.9375rem; }
+.status p:last-child { margin: 0; }
+.status h3 { font-size: 1.375rem; }
+
+footer { border-top: var(--bw) solid var(--line); background: var(--card); padding: 2.5rem 0 3.5rem; font-size: 0.9375rem; color: var(--ink-soft); }
+.foot { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 2rem; }
+.foot p { margin: 0 0 0.5rem; }
+.foot .brand { margin-bottom: 0.75rem; }
+footer li { padding: 0.2rem 0; }
+footer h2 { font-size: 1rem; letter-spacing: 0; color: var(--ink); margin-bottom: 0.5rem; }
+
+@media (max-width: 1180px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .spec-row { grid-template-columns: 12rem minmax(0, 1fr); }
+  .lede { max-width: 40rem; }
+  .tablist { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 960px) {
+  .areas { grid-template-columns: 1fr 1fr; }
+  .head, .beliefs, .trust { grid-template-columns: 1fr; }
+  .foot { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .top nav { display: none; }
+  .flow { --arrow: translateX(-50%) rotate(135deg); padding: 0.75rem 0.5rem; }
+  .flow-row { grid-template-columns: 1fr; align-content: start; }
+  .flow-row > .fcard + .fcard { border-left: 0; border-top: var(--bw) solid var(--line); }
+  .flow-row > .fcard:not(:last-child)::after { top: auto; right: auto; bottom: calc(-0.4rem - 1px); left: 50%; }
+  .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.5rem; }
+  .fclass { display: grid; grid-template-columns: 1fr 1fr; }
+  .fclass > p { grid-column: 1 / -1; }
+  .trust .yes, .foot { grid-template-columns: 1fr; }
+  .spec-row { grid-template-columns: 1fr; padding: 1rem; }
+  .cols-4, .cols-5 { grid-template-columns: 1fr 1fr; }
+  .cols-5 > :last-child { grid-column: 1 / -1; }
+  .areas { grid-template-columns: 1fr; }
+  .ex-tabs .tablist { gap: 0.6rem; }
+  .ex-tabs [role="tab"] { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; padding: 0.75rem 0.4rem; }
+  .ex-tabs .long, .ex-tabs [role="tab"] .chips { display: none; }
+  .ex-tabs .short { display: block; font-size: 0.875rem; }
+  .js .panel-chips { display: flex; }
+  .ex-panel { padding: 1.1rem; }
+  .tablist { grid-template-columns: 1fr 1fr; }
+  .belief { flex-direction: column; gap: 0.75rem; padding: 1.1rem 1.2rem; }
+}
+@media (max-width: 400px) {
+  .brand-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (max-width: 480px) {
+  .cols-2 { grid-template-columns: 1fr; }
+  .flow-play span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .flow { padding: 0.75rem 0.25rem; }
+  .flow-bar { flex-wrap: nowrap; }
+  .ex-switch { flex-wrap: nowrap; min-width: 0; }
+  .ex-switch button { padding: 0.4rem 0.35rem; font-size: 0.75rem; white-space: nowrap; }
+  .flow-play { padding: 0.4rem 0.55rem; }
+  .gh-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .top .btn-sm { padding: 0 0.7rem; }
+  .brand { font-size: 1rem; }
+  [role="tab"] small { display: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-logo" viewBox="0 0 24 24"><path d="m12 3 9 4.5-9 4.5-9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 16 16"><path style="fill:currentColor;stroke:none" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></symbol>
+  <symbol id="i-yes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" style="fill:currentColor;stroke:var(--line);stroke-width:1.8"/><path d="m7.5 12.5 3 3 6-6.5" style="stroke:var(--on-fill);stroke-width:2.4"/></symbol>
+  <symbol id="i-no" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" style="fill:currentColor;stroke:var(--line);stroke-width:1.8"/><path d="m8.5 8.5 7 7m0-7-7 7" style="stroke:var(--on-fill);stroke-width:2.4"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-3.5-5.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5M12 14.5v2"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="m21 7.5-9-4.5-9 4.5v9l9 4.5 9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V7M20 20V3"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M8 21h8M5 7h14M12 3v4"/><path d="M5 7 2 14a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 4 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 19h10.5a4.5 4.5 0 0 0 .4-9A6.5 6.5 0 0 0 5.5 11 4 4 0 0 0 7 19z"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4"/></symbol>
+  <symbol id="i-tick" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v6c0 4.6 3.2 7.9 7.5 9 4.3-1.1 7.5-4.4 7.5-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6.5 6.5 11 11m0-11-11 11"/></symbol>
+  <symbol id="i-ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" style="stroke-width:2.6"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" style="fill:currentColor"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="5.5" r="2.2"/><circle cx="6" cy="18.5" r="2.2"/><circle cx="18" cy="7.5" r="2.2"/><path d="M6 7.7v8.6M18 9.7c0 4.5-6 4-10.3 7"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span><span class="brand-name">Project Engineering Advisor</span></a>
+    <nav aria-label="Sections">
+      <a href="#examples">Examples</a>
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+    </nav>
+    <div class="top-actions">
+      <button type="button" class="btn btn-sm theme-toggle" hidden><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <a class="btn btn-sm" href="https://github.com/Achal13jain/engineering-advisor"><svg class="ic" aria-hidden="true"><use href="#i-gh"/></svg><span class="gh-label">View on GitHub</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap hero" id="top">
+    <div class="hero-grid">
+      <div>
+        <p class="badges"><span class="badge badge-mint">v0.1.0</span><span class="badge badge-lilac">MIT license</span></p>
+        <h1>Project Engineering Advisor</h1>
+        <p class="tagline">The right amount of engineering process for the project you actually have.</p>
+        <p class="lede">An open-source agent skill for Claude Code and other agents that support the Agent Skills format. It works out what kind of project you have, how much is at stake and how mature it is, then recommends the practices that fit and turns them into a phased plan.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#install"><svg class="ic" aria-hidden="true"><use href="#i-terminal"/></svg>Install</a>
+          <a class="btn" href="https://github.com/Achal13jain/engineering-advisor"><svg class="ic" aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a>
+        </div>
+      </div>
+
+      <figure class="flow" aria-labelledby="flow-cap">
+        <div class="flow-bar" hidden>
+          <div class="ex-switch" role="group" aria-label="Worked example">
+            <button type="button" data-ex="0" aria-pressed="true">Static website<span class="bar"></span></button>
+            <button type="button" data-ex="1" aria-pressed="false">B2B SaaS<span class="bar"></span></button>
+            <button type="button" data-ex="2" aria-pressed="false">Team of five<span class="bar"></span></button>
+          </div>
+          <button type="button" class="flow-play"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg><span>Pause</span></button>
+        </div>
+        <div class="card flow-window">
+        <div class="flow-row">
+          <div class="fcard">
+            <p class="ftitle">Your project</p>
+            <ul class="inputs">
+              <li><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg><span><small>Goal</small>Launch a site next month</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg><span><small>Repository</small>A static Next.js site</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span><small>Team</small>One maintainer</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span><small>Data and money</small>A contact form, no payments</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg><span><small>Where it ships</small>Host with instant rollback</span></li>
+            </ul>
+          </div>
+          <div class="fcard">
+            <p class="ftitle"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span>The advisor</p>
+            <ol class="fsteps">
+              <li><b>1</b>Identify the objective</li>
+              <li><b>2</b>Gather context</li>
+              <li class="on"><b>3</b>Classify the project</li>
+              <li><b>4</b>Decide each area</li>
+              <li><b>5</b>Deliver a phased plan</li>
+            </ol>
+          </div>
+          <div class="fcard">
+            <p class="ftitle"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>The plan</p>
+            <div class="plan-body">
+              <p class="phases"><span class="on">Essential now</span><span>Next</span><span>Later</span></p>
+              <ul class="yes">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>GitHub Flow with only <code>main</code></span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>Preview deployments and instant rollback</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>A short CI run on pull requests</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>HTTPS and documented DNS ownership</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>A monitored inbox for form data</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>One rehearsed rollback</span></li>
+              </ul>
+              <hr>
+              <p class="flabel">Not recommended</p>
+              <ul class="no">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg><span>GitFlow</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg><span>A staging environment</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg><span>Kubernetes</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="fclass">
+          <p>Classification</p>
+          <div>Family<span class="chip chip-fam">Static website</span></div>
+          <div>Risk profile<span class="chip chip-low">Low</span></div>
+          <div>Maturity stage<span class="chip chip-stage">Pre-launch</span></div>
+          <div>Release channel<span class="chip chip-low">Reversible</span></div>
+        </div>
+        </div>
+        <figcaption id="flow-cap">Worked example 1 of 3: a static business website before launch.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section class="band band-beliefs" aria-labelledby="beliefs-h">
+    <div class="wrap">
+      <h2 id="beliefs-h" class="visually-hidden">Two beliefs behind every recommendation</h2>
+      <div class="beliefs">
+        <div class="belief">
+          <svg class="ic" aria-hidden="true"><use href="#i-scale"/></svg>
+          <div>
+            <h3>Process has a cost.</h3>
+            <p>More branches, environments, tests, services and tools are not better by default. The skill spends process where it reduces a risk the project actually has, and says plainly when something is unnecessary.</p>
+          </div>
+        </div>
+        <div class="belief">
+          <svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>
+          <div>
+            <h3>Size does not set the security floor.</h3>
+            <p>Money, personal data and regulated data do. A small app that takes payments or stores health data needs strong safeguards from its first release.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="examples" aria-labelledby="examples-h">
+    <div class="wrap">
+      <div class="head head-solo">
+        <div>
+          <p class="eyebrow">Same question, different answers</p>
+          <h2 id="examples-h">The advice changes with the project.</h2>
+          <p class="intro">Three projects ask how to set up branches, reviews, environments, checks and recovery. Pick one to see the skill's answer; these are its own worked examples.</p>
+        </div>
+      </div>
+      <div class="tabs ex-tabs" data-tabs>
+        <div class="tablist" role="tablist" aria-label="Example projects" hidden>
+          <button type="button" role="tab" aria-controls="ex-static"><span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-monitor"/></svg></span><span class="ex-tab-text"><strong class="long">A static business website before launch</strong><strong class="short">Static website</strong><span class="chips"><span class="chip chip-fam">Static website</span><span class="chip chip-low">Low risk</span><span class="chip chip-stage">Pre-launch</span></span></span></button>
+          <button type="button" role="tab" aria-controls="ex-saas"><span class="tile tile-lilac"><svg class="ic" aria-hidden="true"><use href="#i-db"/></svg></span><span class="ex-tab-text"><strong class="long">A new B2B SaaS with sign-in and subscriptions</strong><strong class="short">B2B SaaS</strong><span class="chips"><span class="chip chip-fam">Multi-tenant SaaS</span><span class="chip chip-high">High risk</span><span class="chip chip-stage">Prototype</span></span></span></button>
+          <button type="button" role="tab" aria-controls="ex-team"><span class="tile tile-mint"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="ex-tab-text"><strong class="long">A team growing from one developer to five</strong><strong class="short">Team of five</strong><span class="chips"><span class="chip chip-fam">Full-stack web app</span><span class="chip chip-mod">Moderate risk</span><span class="chip chip-stage">Growing team</span></span></span></button>
+        </div>
+        <div class="card panel ex-panel" id="ex-static">
+          <h3>A static business website before launch</h3>
+          <p class="ex-lede">A Next.js site for a consulting company, launching next month.</p>
+          <p class="chips panel-chips"><span class="chip chip-fam">Static website</span><span class="chip chip-low">Low risk</span><span class="chip chip-stage">Pre-launch</span></p>
+          <ul class="areas">
+            <li class="area" style="--i:0"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg>Branches<small>Barely changes</small></p><p>GitHub Flow with only <code>main</code>. Every pull request gets a preview deployment.</p></li>
+            <li class="area" style="--i:1"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Review<small>Grows with the team</small></p><p>Pull requests and a required check. No required approvals for a solo maintainer.</p></li>
+            <li class="area" style="--i:2"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>Environments<small>Grows with the stakes</small></p><p>Previews and production, with instant rollback. No staging.</p></li>
+            <li class="area" style="--i:3"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Checks<small>Grows with the stakes</small></p><p>Lint, type check, build, link check and an accessibility check, in a few minutes.</p></li>
+            <li class="area" style="--i:4"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg>Recovery<small>Grows with the stakes</small></p><p>One rehearsed rollback before launch.</p></li>
+            <li class="area area-out" style="--i:5"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg>Leaves out</p><ul class="no"><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>GitFlow</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>A staging environment</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>Kubernetes</span></li></ul></li>
+          </ul>
+          <div class="ex-point" style="--i:6"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><p><strong>What matters most.</strong> Documented domain and DNS ownership, HTTPS, a monitored inbox for form data and a privacy notice. The risk rises to Moderate if the form stores personal data.</p></div>
+        </div>
+        <div class="card panel ex-panel" id="ex-saas">
+          <h3>A new B2B SaaS with sign-in and subscriptions</h3>
+          <p class="ex-lede">Sign-in, a PostgreSQL database and paid subscriptions, before building starts.</p>
+          <p class="chips panel-chips"><span class="chip chip-fam">Multi-tenant SaaS</span><span class="chip chip-high">High risk</span><span class="chip chip-stage">Prototype</span></p>
+          <ul class="areas">
+            <li class="area" style="--i:0"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg>Branches<small>Barely changes</small></p><p>GitHub Flow, with feature flags for unfinished work.</p></li>
+            <li class="area" style="--i:1"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Review<small>Grows with the team</small></p><p>One required approval once a second developer joins.</p></li>
+            <li class="area" style="--i:2"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>Environments<small>Grows with the stakes</small></p><p>Local, previews, staging with a billing sandbox, and production. Staging earns its cost because billing and identity cannot be reproduced in previews.</p></li>
+            <li class="area" style="--i:3"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Checks<small>Grows with the stakes</small></p><p>Tenant-isolation tests, an authorization matrix, integration tests against real PostgreSQL and billing webhook tests.</p></li>
+            <li class="area" style="--i:4"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg>Recovery<small>Grows with the stakes</small></p><p>Point-in-time recovery, with one restore tested before the first paying customer.</p></li>
+            <li class="area area-out" style="--i:5"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg>Leaves out</p><ul class="no"><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>Microservices</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>Kubernetes</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>A permanent staging branch</span></li></ul></li>
+          </ul>
+          <div class="ex-point" style="--i:6"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><p><strong>What matters most.</strong> Customer data and money set a high floor from the first release, even with one developer.</p></div>
+        </div>
+        <div class="card panel ex-panel" id="ex-team">
+          <h3>A team growing from one developer to five</h3>
+          <p class="ex-lede">A full-stack web app moving from early production to a growing team.</p>
+          <p class="chips panel-chips"><span class="chip chip-fam">Full-stack web app</span><span class="chip chip-mod">Moderate risk</span><span class="chip chip-stage">Growing team</span></p>
+          <ul class="areas">
+            <li class="area" style="--i:0"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg>Branches<small>Barely changes</small></p><p>Keep GitHub Flow, with feature flags so unfinished work can merge early.</p></li>
+            <li class="area" style="--i:1"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Review<small>Grows with the team</small></p><p>One required approval on every pull request, and CODEOWNERS for billing and authentication.</p></li>
+            <li class="area" style="--i:2"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>Environments<small>Grows with the stakes</small></p><p>Unchanged. No environment branches.</p></li>
+            <li class="area" style="--i:3"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Checks<small>Grows with the stakes</small></p><p>Small pull requests that can be reviewed in one sitting. A merge queue only if <code>main</code> starts breaking.</p></li>
+            <li class="area" style="--i:4"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg>Recovery<small>Grows with the stakes</small></p><p>Written deployment and rollback steps that anyone can run.</p></li>
+            <li class="area area-out" style="--i:5"><p class="area-head"><svg class="ic" aria-hidden="true"><use href="#i-no"/></svg>Leaves out</p><ul class="no"><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>GitFlow</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>Environment branches</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>Microservices</span></li></ul></li>
+          </ul>
+          <div class="ex-point" style="--i:6"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><p><strong>What matters most.</strong> Growing to five developers changes reviews and ownership first, not the branching model.</p></div>
+        </div>
+      </div>
+      <p class="takeaway">The branch model barely moves across the three. What grows with the stakes is the environments, the checks and the recovery, and each answer names what it leaves out as clearly as what it adds.</p>
+    </div>
+  </section>
+
+  <section class="band" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="head head-solo">
+        <div>
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-h">Four things decide the advice.</h2>
+          <p class="intro">It reads your repository without changing it, asks at most three questions, and classifies the project on four axes. Then it starts from the family's defaults, raises them to meet the risk, trims them to the stage, and names what can wait.</p>
+        </div>
+      </div>
+      <div class="card spec">
+        <div class="spec-row">
+          <div class="spec-label"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg><div><h3>Family</h3><p>What kind of software it is.</p></div></div>
+          <ul class="spec-tags"><li>Static websites</li><li>Full-stack web apps</li><li>SaaS and marketplaces</li><li>APIs and backends</li><li>AI-powered apps</li><li>Mobile and desktop</li><li>Libraries and CLIs</li><li class="more">and seven more</li></ul>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><div><h3>Risk profile</h3><p>How much is at stake. It sets the floor.</p></div></div>
+          <ol class="spec-scale cols-4"><li class="seg seg-low"><strong>Low</strong>No accounts, no money</li><li class="seg seg-mod"><strong>Moderate</strong>Accounts or personal data</li><li class="seg seg-high"><strong>High</strong>Money, sensitive or regulated data</li><li class="seg seg-crit"><strong>Critical</strong>Physical harm or legal breach at scale</li></ol>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label"><svg class="ic" aria-hidden="true"><use href="#i-bars"/></svg><div><h3>Maturity stage</h3><p>Where the project is now.</p></div></div>
+          <ol class="spec-scale cols-5"><li class="seg"><strong>1 Prototype</strong>Answer a question cheaply</li><li class="seg"><strong>2 Pre-launch</strong>Release readiness and recovery</li><li class="seg"><strong>3 Early production</strong>Reliable releases</li><li class="seg"><strong>4 Growing</strong>Ownership and coordination</li><li class="seg"><strong>5 Mature</strong>Reliability where justified</li></ol>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg><div><h3>Release channel</h3><p>Whether a bad release can be taken back.</p></div></div>
+          <ol class="spec-scale cols-2"><li class="seg seg-low"><strong>Undone in minutes</strong>Web deploys. Invest in fast detection and rollback.</li><li class="seg seg-crit"><strong>Hard to take back</strong>App stores, registries, firmware and published data. Test more before release.</li></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="try" aria-labelledby="try-h">
+    <div class="wrap">
+      <div class="head head-solo">
+        <div>
+          <p class="eyebrow">Try it</p>
+          <h2 id="try-h">Ask in your own words.</h2>
+          <p class="intro">These prompts are good starting points. Copy one, or describe your own project.</p>
+        </div>
+      </div>
+      <ul class="prompts">
+        <li class="card prompt"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><q>I'm launching a static Next.js business website next month. Help me prepare the repository and deployment workflow.</q></li>
+        <li class="card prompt"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><q>I'm starting a SaaS with authentication, PostgreSQL and subscriptions. Design the engineering workflow before I begin.</q></li>
+        <li class="card prompt"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><q>Review this repository and tell me which engineering practices are missing before launch. Don't change anything.</q></li>
+        <li class="card prompt"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><q>Do I really need a develop and a staging branch for this project?</q></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="install" aria-labelledby="install-h">
+    <div class="wrap">
+      <div class="head head-solo">
+        <div>
+          <p class="eyebrow">Install</p>
+          <h2 id="install-h">Install it in the agent you use.</h2>
+        </div>
+      </div>
+      <div class="tabs" data-tabs>
+        <div class="tablist" role="tablist" aria-label="Agents" hidden>
+          <button type="button" role="tab" aria-controls="p-claude"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><span><strong>Claude</strong><small>Claude Code, claude.ai, API</small></span></button>
+          <button type="button" role="tab" aria-controls="p-codex"><svg class="ic" aria-hidden="true"><use href="#i-code"/></svg><span><strong>Codex</strong><small>CLI and IDE extension</small></span></button>
+          <button type="button" role="tab" aria-controls="p-cli"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg><span><strong>Skills CLI</strong><small>Many agents at once</small></span></button>
+          <button type="button" role="tab" aria-controls="p-gemini"><svg class="ic" aria-hidden="true"><use href="#i-terminal"/></svg><span><strong>Gemini CLI</strong><small>Install from GitHub</small></span></button>
+          <button type="button" role="tab" aria-controls="p-copilot"><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg><span><strong>Copilot CLI</strong><small>Copy the folder</small></span></button>
+        </div>
+        <div class="card panel" id="p-claude">
+          <h3>Claude</h3>
+          <div class="notice"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><p>In Claude Code, use either the plugin or a copied skill folder, not both, or the skill will be listed twice.</p></div>
+          <div class="route">
+            <h4>Claude Code, as a plugin</h4>
+            <ol class="isteps">
+              <li><p>Inside Claude Code, add the marketplace.</p>
+                <div class="code"><div class="code-head">Claude Code</div><pre><code>/plugin marketplace add Achal13jain/engineering-advisor</code></pre></div></li>
+              <li><p>Then install the plugin.</p>
+                <div class="code"><div class="code-head">Claude Code</div><pre><code>/plugin install project-engineering-advisor@project-engineering-advisor</code></pre></div></li>
+            </ol>
+            <p>From a terminal, the same two steps are:</p>
+            <div class="code"><div class="code-head">Terminal</div><pre><code>claude plugin marketplace add Achal13jain/engineering-advisor
+claude plugin install project-engineering-advisor@project-engineering-advisor</code></pre></div>
+            <p>Claude uses the skill when a request matches it, or you can invoke it as <code>/project-engineering-advisor:project-engineering-advisor</code>.</p>
+          </div>
+          <div class="route">
+            <h4>Claude Code, by copying the folder</h4>
+            <p>Copy the skill into <code>~/.claude/skills/</code> for all your projects, or into a repository's <code>.claude/skills/</code> to share it with the team.</p>
+            <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
+cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.claude/skills/</code></pre></div>
+            <div class="code"><div class="code-head">PowerShell</div><pre><code>Copy-Item -Recurse project-engineering-advisor\skills\project-engineering-advisor "$env:USERPROFILE\.claude\skills\"</code></pre></div>
+            <p>Start a new session, then invoke it as <code>/project-engineering-advisor</code> or just ask.</p>
+          </div>
+          <div class="route">
+            <h4>claude.ai</h4>
+            <p>Download <code>project-engineering-advisor.zip</code> from the <a href="https://github.com/Achal13jain/engineering-advisor/releases">latest release</a> and upload it in claude.ai as a custom skill.</p>
+          </div>
+          <div class="route">
+            <h4>Claude API</h4>
+            <p>Upload the skill folder through the Skills API. Skills there run without network access, so the skill marks any tool versions it cannot check as unverified.</p>
+          </div>
+        </div>
+        <div class="card panel" id="p-codex">
+          <h3>Codex</h3>
+          <p>Codex reads your personal skills from <code>~/.agents/skills</code>, and a repository's skills from <code>.agents/skills</code>. Copy the skill folder there.</p>
+          <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
+mkdir -p ~/.agents/skills
+cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.agents/skills/</code></pre></div>
+          <p>Codex finds new skills automatically; restart it if the skill does not appear. Mention it with <code>$project-engineering-advisor</code>, or run <code>/skills</code> to pick it. On Windows, <code>~</code> is your user folder.</p>
+          <p class="tip">Gemini CLI and Copilot CLI also read <code>~/.agents/skills</code>, so this one copy works in all three.</p>
+        </div>
+        <div class="card panel" id="p-cli">
+          <h3>Skills CLI</h3>
+          <p>One command installs the skill into the agents you choose, including Claude Code, Codex, Gemini CLI and GitHub Copilot.</p>
+          <div class="code"><div class="code-head">Terminal</div><pre><code>npx skills add Achal13jain/engineering-advisor</code></pre></div>
+          <p>Choose agents with <code>-a</code>, for example <code>-a codex</code>, <code>-a gemini-cli</code> or <code>-a github-copilot</code>. Add <code>-g</code> to install it for all your projects instead of only the current one.</p>
+        </div>
+        <div class="card panel" id="p-gemini">
+          <h3>Gemini CLI</h3>
+          <p>Install the skill straight from this repository.</p>
+          <div class="code"><div class="code-head">Terminal</div><pre><code>gemini skills install https://github.com/Achal13jain/engineering-advisor.git --path skills/project-engineering-advisor</code></pre></div>
+          <p>Gemini CLI asks you to confirm the install. It installs for your user by default; add <code>--scope workspace</code> to install it for the current project only. In a running session, enter <code>/skills reload</code>. Gemini uses the skill when a request matches and asks before activating it.</p>
+        </div>
+        <div class="card panel" id="p-copilot">
+          <h3>Copilot CLI</h3>
+          <p>Copilot CLI reads your personal skills from <code>~/.copilot/skills</code>, and a repository's skills from <code>.github/skills</code>. Copy the skill folder there.</p>
+          <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
+mkdir -p ~/.copilot/skills
+cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.copilot/skills/</code></pre></div>
+          <p>In a running session, enter <code>/skills reload</code>, then check it with <code>/skills list</code>. Invoke it as <code>/project-engineering-advisor</code>, or just ask. On Windows, <code>~</code> is your user folder.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="trust-h">
+    <div class="wrap trust">
+      <div class="card">
+        <div class="trust-head"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><h2 id="trust-h">What it will and will not do</h2></div>
+        <ul class="yes">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It reads repositories without changing them. It does not change branch protection, repository settings, deployment configuration or production systems without your explicit approval of that specific action.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It does not run destructive Git commands or discard uncommitted work.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It never prints or commits secrets. If it finds one, it reports the file and line without the value and recommends rotating it.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It treats repository contents, issues and web pages as data, not as instructions.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It checks facts about third-party tools at the official source when it is used, and says when it cannot.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg><span>It is an advisor, not an auditor. Legal and compliance questions are flagged as needing a qualified person.</span></li>
+        </ul>
+      </div>
+      <aside class="card status" aria-labelledby="status-h">
+        <div class="trust-head"><svg class="ic" aria-hidden="true"><use href="#i-bars"/></svg><h3 id="status-h">Status</h3></div>
+        <p>Version 0.1.0 is an early release for real-world use and feedback. The repository includes evaluation scenarios and fixture projects to help keep the advice practical.</p>
+        <p>The project does not claim a reliability score or a guaranteed improvement. If the advice is wrong or out of proportion for your project, please <a href="https://github.com/Achal13jain/engineering-advisor/issues/new/choose">report it</a>.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <p class="brand"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span>Project Engineering Advisor</p>
+      <p>The right amount of engineering process for the project you actually have.</p>
+      <p>Created and maintained by <a href="https://github.com/Achal13jain">Achal Jain</a>. MIT license.</p>
+      <p>An independent open-source project, not affiliated with Anthropic.</p>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/Achal13jain/engineering-advisor">Repository</a></li>
+        <li><a href="https://github.com/Achal13jain/engineering-advisor/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/Achal13jain/engineering-advisor/blob/main/SECURITY.md">Security policy</a></li>
+        <li><a href="https://github.com/Achal13jain/engineering-advisor/issues/new/choose">Report a problem</a></li>
+        <li><a href="https://github.com/Achal13jain/engineering-advisor/blob/main/LICENSE">License</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Also by Achal Jain</h2>
+      <ul>
+        <li><a href="https://github.com/Achal13jain/unsaid-rules">Unsaid Rules</a>, an agent skill for grounded client communication about software delivery.</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<div class="visually-hidden" aria-live="polite" id="live"></div>
+
+<script>
+(function () {
+  document.documentElement.classList.add("js");
+  var live = document.getElementById("live");
+  var NS = "http://www.w3.org/2000/svg";
+
+  function icon(id) {
+    var s = document.createElementNS(NS, "svg");
+    s.setAttribute("class", "ic");
+    s.setAttribute("aria-hidden", "true");
+    var u = document.createElementNS(NS, "use");
+    u.setAttribute("href", "#" + id);
+    s.appendChild(u);
+    return s;
+  }
+
+  function addCopy(host, text, label) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "copy";
+    b.setAttribute("aria-label", label);
+    b.title = label;
+    b.appendChild(icon("i-copy"));
+    var use = b.querySelector("use");
+    b.addEventListener("click", function () {
+      navigator.clipboard.writeText(text()).then(function () {
+        use.setAttribute("href", "#i-tick");
+        b.classList.add("done");
+        live.textContent = "Copied to the clipboard";
+        setTimeout(function () { use.setAttribute("href", "#i-copy"); b.classList.remove("done"); live.textContent = ""; }, 1800);
+      }, function () { live.textContent = "Copy failed; select the text instead"; });
+    });
+    host.appendChild(b);
+  }
+  if (navigator.clipboard) {
+    document.querySelectorAll(".code").forEach(function (c) {
+      var code = c.querySelector("code");
+      addCopy(c.querySelector(".code-head"), function () { return code.textContent; }, "Copy command");
+    });
+    document.querySelectorAll(".prompt").forEach(function (p) {
+      var q = p.querySelector("q");
+      addCopy(p, function () { return q.textContent; }, "Copy prompt");
+    });
+  }
+
+  document.querySelectorAll("[data-tabs]").forEach(function (box) {
+    var list = box.querySelector("[role=tablist]");
+    var tabs = Array.prototype.slice.call(list.querySelectorAll("[role=tab]"));
+    var panels = tabs.map(function (t, i) {
+      var p = document.getElementById(t.getAttribute("aria-controls"));
+      t.id = p.id + "-tab";
+      p.setAttribute("role", "tabpanel");
+      p.setAttribute("aria-labelledby", t.id);
+      p.tabIndex = 0;
+      t.addEventListener("click", function () { select(i, false); });
+      t.addEventListener("keydown", function (e) {
+        var k = e.key, n = tabs.length;
+        if (k === "ArrowRight") select((i + 1) % n, true);
+        else if (k === "ArrowLeft") select((i - 1 + n) % n, true);
+        else if (k === "Home") select(0, true);
+        else if (k === "End") select(n - 1, true);
+        else return;
+        e.preventDefault();
+      });
+      return p;
+    });
+    function select(i, focus) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+      if (focus) tabs[i].focus();
+    }
+    list.hidden = false;
+    select(0, false);
+  });
+  var flow = document.querySelector(".flow");
+  if (flow) {
+    var EX = [
+      {
+        cap: "Worked example 1 of 3: a static business website before launch.",
+        inputs: ["Launch a site next month", "A static Next.js site", "One maintainer", "A contact form, no payments", "Host with instant rollback"],
+        cls: [["Static website", "chip-fam"], ["Low", "chip-low"], ["Pre-launch", "chip-stage"], ["Reversible", "chip-low"]],
+        plan: [
+          ["GitHub Flow with only <code>main</code>", "Preview deployments and instant rollback", "A short CI run on pull requests", "HTTPS and documented DNS ownership", "A monitored inbox for form data", "One rehearsed rollback"],
+          ["Monthly automated dependency updates", "Uptime and certificate expiry monitoring"],
+          [["A blocking performance budget", "If the site becomes a lead channel"], ["Visual regression tests", "If a component library grows"]]
+        ],
+        no: ["GitFlow", "A staging environment", "Kubernetes"]
+      },
+      {
+        cap: "Worked example 2 of 3: a new B2B SaaS with sign-in, PostgreSQL and subscriptions.",
+        inputs: ["Plan before building", "Nothing built yet", "One developer for now", "Customer data and billing", "Web deploys"],
+        cls: [["Multi-tenant SaaS", "chip-fam"], ["High", "chip-high"], ["Prototype", "chip-stage"], ["Reversible", "chip-low"]],
+        plan: [
+          ["A modular monolith with a tenant ID on every table", "Tenant-isolation tests in CI", "Signed, idempotent billing webhooks", "Backward-compatible migrations", "Staging with a billing sandbox", "Point-in-time recovery, one tested restore"],
+          ["Dependency updates with a named triager", "Data export and deletion paths", ["Service level objectives", "Once customers depend on it during working hours"]],
+          ["Canary releases", ["Single sign-on", "For enterprise customers"], ["Silo deployment", "For a large or regulated tenant"]]
+        ],
+        no: ["Microservices", "Kubernetes", "A permanent staging branch"]
+      },
+      {
+        cap: "Worked example 3 of 3: a team growing from one developer to five.",
+        inputs: ["Adapt as the team grows", "A web app in production", "One now, five next quarter", "Personal data, assumed", "Web deploys"],
+        cls: [["Full-stack web app", "chip-fam"], ["Moderate", "chip-mod"], ["Growing team", "chip-stage"], ["Reversible", "chip-low"]],
+        plan: [
+          ["One required approval on every pull request", "A pull request template with testing notes", "CODEOWNERS for billing and authentication", "Feature flags so unfinished work can merge", "Written deploy and rollback steps"],
+          ["A README that gets a new developer running in a day", "Decision records for past choices", "A named owner for CI and each external account"],
+          [["A merge queue", "If main starts breaking from concurrent merges"], ["An on-call rotation", "If users depend on it during working hours"]]
+        ],
+        no: ["GitFlow", "Environment branches", "Microservices"]
+      }
+    ];
+    var PH = ["Essential now", "Next", "Later"];
+    var IN = [["i-target", "Goal"], ["i-folder", "Repository"], ["i-users", "Team"], ["i-lock", "Data and money"], ["i-box", "Where it ships"]];
+    var CL = ["Family", "Risk profile", "Maturity stage", "Release channel"];
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var bar = flow.querySelector(".flow-bar");
+    var exBtns = Array.prototype.slice.call(bar.querySelectorAll("[data-ex]"));
+    var play = bar.querySelector(".flow-play");
+    var inputs = flow.querySelector(".inputs");
+    var steps = Array.prototype.slice.call(flow.querySelectorAll(".fsteps li"));
+    var planBody = flow.querySelector(".plan-body");
+    var cls = flow.querySelector(".fclass");
+    var cap = flow.querySelector("figcaption");
+    var row = flow.querySelector(".flow-row");
+    var cards = row.querySelectorAll(".fcard");
+    var cur = 0, phase = 0, playing = false, timers = [];
+
+    var svg = function (id) { return '<svg class="ic" aria-hidden="true"><use href="#' + id + '"/></svg>'; };
+    var inputsHTML = function (e) {
+      return e.inputs.map(function (v, k) { return '<li style="--i:' + k + '">' + svg(IN[k][0]) + '<span><small>' + IN[k][1] + '</small>' + v + '</span></li>'; }).join("");
+    };
+    var clsHTML = function (e) {
+      return '<p>Classification</p>' + e.cls.map(function (c, k) { return '<div>' + CL[k] + '<span class="chip ' + c[1] + '" style="--i:' + k + '">' + c[0] + '</span></div>'; }).join("");
+    };
+    var planHTML = function (e, p) {
+      var items = e.plan[p];
+      return '<div class="phases" role="group" aria-label="Plan phase">' + PH.map(function (n, k) { return '<button type="button" data-ph="' + k + '" aria-pressed="' + (k === p) + '">' + n + '</button>'; }).join("") + '</div>' +
+        '<ul class="yes' + (p ? ' later' : '') + '">' + items.map(function (it, k) { it = [].concat(it); return '<li style="--i:' + k + '">' + svg(p ? "i-ring" : "i-yes") + '<span>' + it[0] + (it[1] ? '<small>' + it[1] + '</small>' : '') + '</span></li>'; }).join("") + '</ul>' +
+        '<hr><p class="flabel">Not recommended</p><ul class="no">' + e.no.map(function (t, k) { return '<li style="--i:' + (k + items.length) + '">' + svg("i-no") + '<span>' + t + '</span></li>'; }).join("") + '</ul>';
+    };
+    var put = function (el, html, animate) { el.classList.remove("stale"); el.classList.toggle("anim", !!animate); el.innerHTML = html; };
+    var setStep = function (k) { steps.forEach(function (li, j) { li.classList.toggle("on", j === k); li.classList.toggle("done", j < k); }); };
+    var nudge = function (k) { cards[k].classList.remove("flowing"); void cards[k].offsetWidth; cards[k].classList.add("flowing"); };
+    var paint = function () {
+      var e = EX[cur];
+      put(inputs, inputsHTML(e)); put(cls, clsHTML(e)); put(planBody, planHTML(e, phase));
+      cap.textContent = e.cap;
+      setStep(4);
+    };
+    var settle = function () { if (timers.length) { timers.forEach(clearTimeout); timers = []; paint(); } };
+    var restartBar = function () { flow.classList.remove("auto"); void flow.offsetWidth; if (playing) flow.classList.add("auto"); };
+    var setPlaying = function (v) {
+      playing = v;
+      play.querySelector("use").setAttribute("href", v ? "#i-pause" : "#i-play");
+      play.querySelector("span").textContent = v ? "Pause" : "Play";
+      restartBar();
+    };
+
+    var show = function (i, animate) {
+      timers.forEach(clearTimeout); timers = [];
+      cur = i; phase = 0;
+      var e = EX[i];
+      exBtns.forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+      restartBar();
+      if (!animate) { paint(); return; }
+      cap.textContent = e.cap;
+      put(inputs, inputsHTML(e), true);
+      cls.classList.add("stale"); planBody.classList.add("stale");
+      setStep(0);
+      [
+        [450, function () { setStep(1); nudge(0); }],
+        [950, function () { setStep(2); put(cls, clsHTML(e), true); }],
+        [1450, function () { setStep(3); }],
+        [1950, function () { setStep(4); nudge(1); put(planBody, planHTML(e, 0), true); timers = []; }]
+      ].forEach(function (s) { timers.push(setTimeout(s[1], s[0])); });
+    };
+
+    // Lock the figure to its tallest state so the page does not jump as the examples change.
+    var measure = function () {
+      timers.forEach(clearTimeout); timers = [];
+      var keep = [cur, phase], h = 0, r = 0;
+      flow.style.minHeight = row.style.minHeight = "";
+      EX.forEach(function (e, i) { PH.forEach(function (n, p) { cur = i; phase = p; paint(); r = Math.max(r, row.offsetHeight); }); });
+      row.style.minHeight = r + "px";
+      EX.forEach(function (e, i) { PH.forEach(function (n, p) { cur = i; phase = p; paint(); h = Math.max(h, flow.offsetHeight); }); });
+      cur = keep[0]; phase = keep[1]; paint();
+      flow.style.minHeight = h + "px";
+    };
+
+    exBtns.forEach(function (b, j) {
+      b.addEventListener("click", function () { setPlaying(false); show(j, !reduce); });
+      b.querySelector(".bar").addEventListener("animationend", function () { if (playing) show((cur + 1) % EX.length, !reduce); });
+    });
+    play.addEventListener("click", function () { setPlaying(!playing); });
+    planBody.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-ph]");
+      if (!b) return;
+      setPlaying(false); settle();
+      phase = Number(b.getAttribute("data-ph"));
+      put(planBody, planHTML(EX[cur], phase), !reduce);
+      planBody.querySelector('[data-ph="' + phase + '"]').focus();
+    });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (en) { flow.classList.toggle("off", !en[0].isIntersecting); }).observe(flow);
+    }
+    var rt;
+    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(measure, 200); });
+
+    bar.hidden = false;
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
+      measure();
+      setPlaying(!reduce);
+      show(0, !reduce);
+    });
+  }
+  var themeBtn = document.querySelector(".theme-toggle");
+  if (themeBtn) {
+    var rootEl = document.documentElement;
+    var systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+    var themeNow = function () { return rootEl.getAttribute("data-theme") || (systemDark.matches ? "dark" : "light"); };
+    var showTheme = function () {
+      var dark = themeNow() === "dark";
+      var label = dark ? "Switch to the light theme" : "Switch to the dark theme";
+      themeBtn.querySelector("use").setAttribute("href", dark ? "#i-sun" : "#i-moon");
+      themeBtn.setAttribute("aria-label", label);
+      themeBtn.title = label;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.setAttribute("content", dark ? "#0f1420" : "#f5f5f1"); });
+    };
+    themeBtn.addEventListener("click", function () {
+      var next = themeNow() === "dark" ? "light" : "dark";
+      rootEl.setAttribute("data-theme", next);
+      try { localStorage.setItem("pea-theme", next); } catch (e) {}
+      showTheme();
+    });
+    if (systemDark.addEventListener) systemDark.addEventListener("change", showTheme);
+    themeBtn.hidden = false;
+    showTheme();
+  }
+})();
+</script>
+</body>
+</html>

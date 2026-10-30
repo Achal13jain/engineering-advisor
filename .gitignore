@@ -1,0 +1,12 @@
+# Local working notes for the maintainer's editor setup, not part of the project
+LANE_BRIEF.md
+LANE_STATUS.md
+project-engineering-advisor.md
+RESEARCH.md
+
+# Build output; release ZIPs are attached to GitHub releases instead
+dist/
+
+# Evaluation runs (skill-creator workspace) and Python caches
+project-engineering-advisor-workspace/
+__pycache__/

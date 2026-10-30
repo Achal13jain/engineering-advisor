@@ -1,0 +1,5 @@
+# Keep LF line endings on every platform, so frontmatter parsing and checks behave the same on Windows.
+* text=auto eol=lf
+*.png binary
+*.zip binary
+*.woff2 binary
