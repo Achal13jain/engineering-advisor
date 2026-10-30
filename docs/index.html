@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project Engineering Advisor</title>
+<title>Engineering Advisor</title>
 <meta name="description" content="An open-source agent skill that classifies a software project by family, risk and maturity, then recommends the right amount of engineering process and a phased plan.">
-<meta property="og:title" content="Project Engineering Advisor">
+<meta property="og:title" content="Engineering Advisor">
 <meta property="og:description" content="The right amount of engineering process for the project you actually have. An open-source agent skill for Claude Code and other Agent Skills tools.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#f5f5f1" media="(prefers-color-scheme: light)">
@@ -446,7 +446,7 @@ footer h2 { font-size: 1rem; letter-spacing: 0; color: var(--ink); margin-bottom
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span><span class="brand-name">Project Engineering Advisor</span></a>
+    <a class="brand" href="#top"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span><span class="brand-name">Engineering Advisor</span></a>
     <nav aria-label="Sections">
       <a href="#examples">Examples</a>
       <a href="#how">How it works</a>
@@ -464,7 +464,7 @@ footer h2 { font-size: 1rem; letter-spacing: 0; color: var(--ink); margin-bottom
     <div class="hero-grid">
       <div>
         <p class="badges"><span class="badge badge-mint">v0.1.0</span><span class="badge badge-lilac">MIT license</span></p>
-        <h1>Project Engineering Advisor</h1>
+        <h1>Engineering Advisor</h1>
         <p class="tagline">The right amount of engineering process for the project you actually have.</p>
         <p class="lede">An open-source agent skill for Claude Code and other agents that support the Agent Skills format. It works out what kind of project you have, how much is at stake and how mature it is, then recommends the practices that fit and turns them into a phased plan.</p>
         <div class="actions">
@@ -696,24 +696,24 @@ footer h2 { font-size: 1rem; letter-spacing: 0; color: var(--ink); margin-bottom
               <li><p>Inside Claude Code, add the marketplace.</p>
                 <div class="code"><div class="code-head">Claude Code</div><pre><code>/plugin marketplace add Achal13jain/engineering-advisor</code></pre></div></li>
               <li><p>Then install the plugin.</p>
-                <div class="code"><div class="code-head">Claude Code</div><pre><code>/plugin install project-engineering-advisor@project-engineering-advisor</code></pre></div></li>
+                <div class="code"><div class="code-head">Claude Code</div><pre><code>/plugin install engineering-advisor@engineering-advisor</code></pre></div></li>
             </ol>
             <p>From a terminal, the same two steps are:</p>
             <div class="code"><div class="code-head">Terminal</div><pre><code>claude plugin marketplace add Achal13jain/engineering-advisor
-claude plugin install project-engineering-advisor@project-engineering-advisor</code></pre></div>
-            <p>Claude uses the skill when a request matches it, or you can invoke it as <code>/project-engineering-advisor:project-engineering-advisor</code>.</p>
+claude plugin install engineering-advisor@engineering-advisor</code></pre></div>
+            <p>Claude uses the skill when a request matches it, or you can invoke it as <code>/engineering-advisor:engineering-advisor</code>.</p>
           </div>
           <div class="route">
             <h4>Claude Code, by copying the folder</h4>
             <p>Copy the skill into <code>~/.claude/skills/</code> for all your projects, or into a repository's <code>.claude/skills/</code> to share it with the team.</p>
             <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
-cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.claude/skills/</code></pre></div>
-            <div class="code"><div class="code-head">PowerShell</div><pre><code>Copy-Item -Recurse project-engineering-advisor\skills\project-engineering-advisor "$env:USERPROFILE\.claude\skills\"</code></pre></div>
-            <p>Start a new session, then invoke it as <code>/project-engineering-advisor</code> or just ask.</p>
+cp -r engineering-advisor/skills/engineering-advisor ~/.claude/skills/</code></pre></div>
+            <div class="code"><div class="code-head">PowerShell</div><pre><code>Copy-Item -Recurse engineering-advisor\skills\engineering-advisor "$env:USERPROFILE\.claude\skills\"</code></pre></div>
+            <p>Start a new session, then invoke it as <code>/engineering-advisor</code> or just ask.</p>
           </div>
           <div class="route">
             <h4>claude.ai</h4>
-            <p>Download <code>project-engineering-advisor.zip</code> from the <a href="https://github.com/Achal13jain/engineering-advisor/releases">latest release</a> and upload it in claude.ai as a custom skill.</p>
+            <p>Download <code>engineering-advisor.zip</code> from the <a href="https://github.com/Achal13jain/engineering-advisor/releases">latest release</a> and upload it in claude.ai as a custom skill.</p>
           </div>
           <div class="route">
             <h4>Claude API</h4>
@@ -725,8 +725,8 @@ cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.claude/s
           <p>Codex reads your personal skills from <code>~/.agents/skills</code>, and a repository's skills from <code>.agents/skills</code>. Copy the skill folder there.</p>
           <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
 mkdir -p ~/.agents/skills
-cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.agents/skills/</code></pre></div>
-          <p>Codex finds new skills automatically; restart it if the skill does not appear. Mention it with <code>$project-engineering-advisor</code>, or run <code>/skills</code> to pick it. On Windows, <code>~</code> is your user folder.</p>
+cp -r engineering-advisor/skills/engineering-advisor ~/.agents/skills/</code></pre></div>
+          <p>Codex finds new skills automatically; restart it if the skill does not appear. Mention it with <code>$engineering-advisor</code>, or run <code>/skills</code> to pick it. On Windows, <code>~</code> is your user folder.</p>
           <p class="tip">Gemini CLI and Copilot CLI also read <code>~/.agents/skills</code>, so this one copy works in all three.</p>
         </div>
         <div class="card panel" id="p-cli">
@@ -738,7 +738,7 @@ cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.agents/s
         <div class="card panel" id="p-gemini">
           <h3>Gemini CLI</h3>
           <p>Install the skill straight from this repository.</p>
-          <div class="code"><div class="code-head">Terminal</div><pre><code>gemini skills install https://github.com/Achal13jain/engineering-advisor.git --path skills/project-engineering-advisor</code></pre></div>
+          <div class="code"><div class="code-head">Terminal</div><pre><code>gemini skills install https://github.com/Achal13jain/engineering-advisor.git --path skills/engineering-advisor</code></pre></div>
           <p>Gemini CLI asks you to confirm the install. It installs for your user by default; add <code>--scope workspace</code> to install it for the current project only. In a running session, enter <code>/skills reload</code>. Gemini uses the skill when a request matches and asks before activating it.</p>
         </div>
         <div class="card panel" id="p-copilot">
@@ -746,8 +746,8 @@ cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.agents/s
           <p>Copilot CLI reads your personal skills from <code>~/.copilot/skills</code>, and a repository's skills from <code>.github/skills</code>. Copy the skill folder there.</p>
           <div class="code"><div class="code-head">Terminal</div><pre><code>git clone https://github.com/Achal13jain/engineering-advisor.git
 mkdir -p ~/.copilot/skills
-cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.copilot/skills/</code></pre></div>
-          <p>In a running session, enter <code>/skills reload</code>, then check it with <code>/skills list</code>. Invoke it as <code>/project-engineering-advisor</code>, or just ask. On Windows, <code>~</code> is your user folder.</p>
+cp -r engineering-advisor/skills/engineering-advisor ~/.copilot/skills/</code></pre></div>
+          <p>In a running session, enter <code>/skills reload</code>, then check it with <code>/skills list</code>. Invoke it as <code>/engineering-advisor</code>, or just ask. On Windows, <code>~</code> is your user folder.</p>
         </div>
       </div>
     </div>
@@ -778,7 +778,7 @@ cp -r project-engineering-advisor/skills/project-engineering-advisor ~/.copilot/
 <footer>
   <div class="wrap foot">
     <div>
-      <p class="brand"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span>Project Engineering Advisor</p>
+      <p class="brand"><span class="logo"><svg class="ic" aria-hidden="true"><use href="#i-logo"/></svg></span>Engineering Advisor</p>
       <p>The right amount of engineering process for the project you actually have.</p>
       <p>Created and maintained by <a href="https://github.com/Achal13jain">Achal Jain</a>. MIT license.</p>
       <p>An independent open-source project, not affiliated with Anthropic.</p>

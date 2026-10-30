@@ -1,4 +1,4 @@
-# Project Engineering Advisor
+# Engineering Advisor
 
 Get an engineering plan that fits the project you actually have. This open skill classifies a project by family, risk, maturity, and release style, then recommends practical engineering steps without adding process for its own sake.
 
@@ -21,10 +21,10 @@ Add the repository marketplace and install the plugin:
 
 ```text
 /plugin marketplace add Achal13jain/engineering-advisor
-/plugin install project-engineering-advisor@project-engineering-advisor
+/plugin install engineering-advisor@engineering-advisor
 ```
 
-Invoke it directly with `/project-engineering-advisor:project-engineering-advisor`, or ask Claude Code an engineering workflow question.
+Invoke it directly with `/engineering-advisor:engineering-advisor`, or ask Claude Code an engineering workflow question.
 
 ### Other agents
 
@@ -42,7 +42,7 @@ npx skills add Achal13jain/engineering-advisor
 
 ## Project contents
 
-- `skills/project-engineering-advisor/` is the portable skill.
+- `skills/engineering-advisor/` is the portable skill.
 - `.claude-plugin/` contains the Claude Code plugin and marketplace manifests.
 - `docs/` contains the project home page and its local assets.
 - `evals/` contains scenarios and fixture projects used to assess recommendations.

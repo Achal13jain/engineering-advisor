@@ -8,5 +8,5 @@ RESEARCH.md
 dist/
 
 # Evaluation runs (skill-creator workspace) and Python caches
-project-engineering-advisor-workspace/
+*engineering-advisor-workspace/
 __pycache__/

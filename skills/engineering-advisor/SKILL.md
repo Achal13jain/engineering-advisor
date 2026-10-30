@@ -1,9 +1,9 @@
 ---
-name: project-engineering-advisor
+name: engineering-advisor
 description: Acts as a pragmatic senior engineering advisor that classifies a software project by family, risk profile and maturity stage, then recommends proportionate practices for architecture, repository layout, Git branching, pull requests, testing, CI/CD, environments, deployment, rollback, security and maintenance, ending in a phased plan. Covers static and CMS sites, full-stack and SaaS apps, e-commerce, internal tools, real-time apps, APIs, microservices, event-driven and serverless systems, AI and LLM apps, ML, data pipelines, mobile and desktop apps, libraries, CLIs and IoT. Use when planning a new project, preparing a launch, auditing a repository for missing engineering practices, choosing a branching strategy, adding or fixing CI/CD, designing environments, releases or rollback, checking production readiness, or adapting the workflow as a team grows. Also use when asked whether a project needs GitFlow, a develop or staging branch, microservices, Kubernetes or more tests.
 ---
 
-# Project Engineering Advisor
+# Engineering Advisor
 
 Advise on how a software project should be planned, built, tested, released, secured and maintained. Choose practices in proportion to the project's real risks and stage, explain the reasoning, and turn the decision into a plan the user can act on.
 

@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for helping improve the Project Engineering Advisor. The most useful contribution is a report of advice that was wrong, out of date or out of proportion for a real project, because the skill's whole purpose is to recommend the right amount of process.
+Thank you for helping improve the Engineering Advisor. The most useful contribution is a report of advice that was wrong, out of date or out of proportion for a real project, because the skill's whole purpose is to recommend the right amount of process.
 
 ## Reporting advice problems
 
@@ -10,7 +10,7 @@ For security problems, follow [SECURITY.md](SECURITY.md) instead of opening a pu
 
 ## Rules for changing the skill
 
-The skill lives in `skills/project-engineering-advisor/`. These rules keep it accurate and usable on every surface that loads skills.
+The skill lives in `skills/engineering-advisor/`. These rules keep it accurate and usable on every surface that loads skills.
 
 1. **Proportion first.** Process has a cost. New guidance should say which risk it reduces, what it costs, and when it is not needed. Size never lowers the security floor; money and sensitive data raise it.
 2. **Verify facts about third-party tools at the source.** Anything about a provider's features, defaults, limits, retention, pricing or versions must come from the provider's current official page. Read the page, then add its URL to `tools/verified_sources.json` with the date you read it and a note of the exact fact. The check script fails on any URL in the references that is not in that file.
@@ -45,7 +45,7 @@ python evals/setup_fixture.py evals/files/portfolio-site RUN_DIR/repo --main-onl
 python evals/setup_fixture.py evals/files/weak-ci-app RUN_DIR/repo --dirty      # scenario 10
 ```
 
-Point with-skill runs at a copy of `skills/project-engineering-advisor/` rather than at this repository, so that the run cannot read the expected answers in `evals/`. When you report results, give the model, the date, and the number of runs.
+Point with-skill runs at a copy of `skills/engineering-advisor/` rather than at this repository, so that the run cannot read the expected answers in `evals/`. When you report results, give the model, the date, and the number of runs.
 
 ## Releasing
 
@@ -56,7 +56,7 @@ These steps are for the maintainer.
 3. Build the ZIP for claude.ai, which has the skill folder at its root:
 
    ```bash
-   python -m zipfile -c dist/project-engineering-advisor.zip skills/project-engineering-advisor
+   python -m zipfile -c dist/engineering-advisor.zip skills/engineering-advisor
    ```
 
 4. Tag the release as `vX.Y.Z`, push the tag, and create a GitHub release from it with the ZIP attached and the changelog entry as notes.

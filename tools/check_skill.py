@@ -18,7 +18,7 @@ import sys
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NAME = "project-engineering-advisor"
+NAME = "engineering-advisor"
 SKILL = os.path.join(ROOT, "skills", NAME)
 # The skill-creator plugin cache path includes a version hash; take the newest copy if present.
 VALIDATORS = sorted(glob.glob(os.path.expanduser(
