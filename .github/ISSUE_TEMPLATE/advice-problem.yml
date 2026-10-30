@@ -1,0 +1,53 @@
+name: Problem with the advice
+description: The skill recommended something wrong, out of date, or out of proportion for a project.
+title: "[Advice]: "
+labels: ["advice"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting this. Do not paste secrets or private code.
+        Security problems belong in a private report; see SECURITY.md.
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt
+      description: What you asked, as close to the original wording as you can.
+    validations:
+      required: true
+  - type: textarea
+    id: project
+    attributes:
+      label: The project
+      description: What it does, who uses it, whether it handles money or personal data, team size, and how changes reach users.
+    validations:
+      required: true
+  - type: textarea
+    id: advice
+    attributes:
+      label: What the skill recommended
+      description: A short excerpt or summary of the part you disagree with.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead, and why
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did you use the skill?
+      options:
+        - Claude Code
+        - claude.ai
+        - Claude API
+        - Another agent
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill version
+      description: From .claude-plugin/plugin.json or the release you installed.
