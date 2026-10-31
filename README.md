@@ -1,5 +1,7 @@
 # Engineering Advisor
 
+**Home page:** [engineering-advisor.pages.dev](https://engineering-advisor.pages.dev/)
+
 Get an engineering plan that fits the project you actually have. This open skill classifies a project by family, risk, maturity, and release style, then recommends practical engineering steps without adding process for its own sake.
 
 ![Project flow: understand the project, size the safeguards, and build a phased plan](docs/readme-flow.svg)

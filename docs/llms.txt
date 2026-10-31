@@ -1,0 +1,13 @@
+# Engineering Advisor
+
+> An open-source agent skill that classifies a software project by family, risk, maturity, and release style, then recommends proportionate engineering practices and a phased plan.
+
+The skill reads available repositories without changing them by default. It advises on architecture, Git workflows, testing, CI/CD, environments, deployment, security, and maintenance.
+
+## Project
+
+- [Home page](https://engineering-advisor.pages.dev/): Overview and installation guidance.
+- [GitHub repository](https://github.com/Achal13jain/engineering-advisor): Source code, releases, and issue tracker.
+- [README](https://github.com/Achal13jain/engineering-advisor/blob/main/README.md): Short introduction and installation commands.
+- [Skill instructions](https://github.com/Achal13jain/engineering-advisor/blob/main/skills/engineering-advisor/SKILL.md): The portable agent skill.
+- [License](https://github.com/Achal13jain/engineering-advisor/blob/main/LICENSE): MIT license.
