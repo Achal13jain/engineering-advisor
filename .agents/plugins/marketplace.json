@@ -1,0 +1,17 @@
+{
+  "name": "engineering-advisor",
+  "interface": {
+    "displayName": "Engineering Advisor"
+  },
+  "plugins": [
+    {
+      "name": "engineering-advisor",
+      "source": "./",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

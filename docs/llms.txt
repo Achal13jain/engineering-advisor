@@ -9,5 +9,6 @@ The skill reads available repositories without changing them by default. It advi
 - [Home page](https://engineering-advisor.pages.dev/): Overview and installation guidance.
 - [GitHub repository](https://github.com/Achal13jain/engineering-advisor): Source code, releases, and issue tracker.
 - [README](https://github.com/Achal13jain/engineering-advisor/blob/main/README.md): Short introduction and installation commands.
+- [Evaluation](https://github.com/Achal13jain/engineering-advisor/blob/main/EVALUATION.md): How the skill is evaluated, the results so far, and what is not yet measured.
 - [Skill instructions](https://github.com/Achal13jain/engineering-advisor/blob/main/skills/engineering-advisor/SKILL.md): The portable agent skill.
 - [License](https://github.com/Achal13jain/engineering-advisor/blob/main/LICENSE): MIT license.

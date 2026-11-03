@@ -29,37 +29,45 @@ The skill lives in `skills/engineering-advisor/`. These rules keep it accurate a
    python tools/check_skill.py
    ```
 
-   If you have Claude Code installed, also run `claude plugin validate .` from the repository root.
-4. If the change affects what the skill recommends, run the relevant evaluation scenarios (below) and mention the results in the pull request.
+   If you have Claude Code installed, also run `claude plugin validate .` from the repository root. If you changed a source in `tools/verified_sources.json`, run `python tools/check_sources.py` too; it fetches every listed page and also runs monthly in the Sources workflow.
+4. If the change affects what the skill recommends, run the relevant evaluation cases (below) and mention the results in the pull request.
 5. Open a pull request and fill in the template. CI runs the same check script.
 
 ## Evaluations
 
-`evals/evals.json` holds ten scenarios in the format used by Anthropic's skill-creator plugin. Each has a prompt, the expected outcome and pass or fail expectations. Run each scenario twice, once with the skill and once without, so the results show what the skill adds.
+`evals/` holds twenty-one cases for Claude Code's built-in eval runner, `claude plugin eval` (see https://code.claude.com/docs/en/plugin-evals; it needs Claude Code 2.1.269 or later). Each case folder has a `prompt.md` with the request and run limits, and a `graders/` folder with one file per check. Cases that need a repository also have a `case.yaml` and a `fixture.sh` that builds a small fake repository in the run's empty workspace. [EVALUATION.md](EVALUATION.md) explains the design and records the results.
 
-Scenarios 6, 7 and 10 run against fixture repositories. Create a fresh copy for every run, outside this repository, and never point a run at a real repository:
+Every run calls a model on your account and costs money. The runner runs each case three times with the plugin and three times without it unless you say otherwise, so start small. From the repository root:
 
 ```bash
-python evals/setup_fixture.py evals/files/weak-ci-app RUN_DIR/repo              # scenario 6
-python evals/setup_fixture.py evals/files/portfolio-site RUN_DIR/repo --main-only # scenario 7
-python evals/setup_fixture.py evals/files/weak-ci-app RUN_DIR/repo --dirty      # scenario 10
+# One case, one run on each side
+claude plugin eval . --scaffold --no-publish --case overengineering-pushback --runs 1
+
+# The twenty cases that need no shell, one run each, with a spending limit in US dollars
+claude plugin eval . --scaffold --no-publish --runs 1 --max-cost-usd 20 --tag planning --tag audit --tag pushback --tag clarifying
 ```
 
-Point with-skill runs at a copy of `skills/engineering-advisor/` rather than at this repository, so that the run cannot read the expected answers in `evals/`. When you report results, give the model, the date, and the number of runs.
+- `--scaffold` lets the fixture scripts run. They only write files and Git state inside the run's temporary workspace, but they run as you, so read them first.
+- `--no-publish` keeps the HTML report on your machine instead of publishing it to claude.ai.
+- The case `protect-uncommitted-work` also needs `--allow-tools Bash`. The runner then confines shell commands to its sandbox, which needs macOS, Linux or WSL2; native Windows has no sandbox, so run that case from WSL2 there.
+- Results are written to `evals/results/`, which Git ignores. Open the `report.html` in that folder for the scores with and without the skill.
+
+When you report results in a pull request or in EVALUATION.md, give the date, the Claude Code version, the model, the number of runs and the cost.
 
 ## Releasing
 
 These steps are for the maintainer.
 
-1. Set the version in `.claude-plugin/plugin.json` and replace "not yet released" in the newest `CHANGELOG.md` heading with the release date. The check script fails if the two versions differ. Claude Code users receive an update only when this version changes.
+1. Set the version in `.claude-plugin/plugin.json` and in the root `plugin.json` (the Codex manifest), and replace "not yet released" in the newest `CHANGELOG.md` heading with the release date. The check script fails if the versions differ. Claude Code users receive an update only when this version changes.
 2. Run `python tools/check_skill.py` and `claude plugin validate .`.
-3. Build the ZIP for claude.ai, which has the skill folder at its root:
+3. Build the ZIP for claude.ai, which has the skill folder at its root, and a checksum file for it:
 
    ```bash
    python -m zipfile -c dist/engineering-advisor.zip skills/engineering-advisor
+   python -c "import hashlib, pathlib; z = pathlib.Path('dist/engineering-advisor.zip'); pathlib.Path('dist/SHA256SUMS').write_text(hashlib.sha256(z.read_bytes()).hexdigest() + '  ' + z.name + '\n', newline='\n')"
    ```
 
-4. Tag the release as `vX.Y.Z`, push the tag, and create a GitHub release from it with the ZIP attached and the changelog entry as notes.
+4. Tag the release as `vX.Y.Z`, push the tag, and create a GitHub release from it with `engineering-advisor.zip` and `SHA256SUMS` attached and the changelog entry as notes.
 
 ## License
 

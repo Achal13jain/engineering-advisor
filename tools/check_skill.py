@@ -3,8 +3,8 @@
 Checks: the frontmatter rules of the Agent Skills specification (plus the skill-creator
 validator when it is installed locally), description and SKILL.md length, links from
 SKILL.md to every reference file, a Contents section in long reference files, the house
-style (no em dashes, en dashes or double hyphens in prose), evals.json, the plugin and
-marketplace manifests, the version in CHANGELOG.md, and that every source URL in the
+style (no em dashes, en dashes or double hyphens in prose), the eval case files, the plugin and
+marketplace manifests for Claude Code and Codex, the version in CHANGELOG.md, and that every source URL in the
 references is listed in tools/verified_sources.json. Exit code 1 if anything fails.
 Needs Python 3 and PyYAML.
 """
@@ -79,10 +79,12 @@ print(f"references: {len(refs)} files")
 
 # 4. House style
 docs = (glob.glob(os.path.join(SKILL, "**", "*.md"), recursive=True) + glob.glob(os.path.join(ROOT, "*.md"))
-        + glob.glob(os.path.join(ROOT, ".github", "**", "*.*"), recursive=True))
+        + glob.glob(os.path.join(ROOT, ".github", "**", "*.*"), recursive=True)
+        + glob.glob(os.path.join(ROOT, "evals", "**", "*.md"), recursive=True))
 for f in docs:
     t = open(f, encoding="utf-8").read()
-    prose = re.sub(r"`[^`]*`", "", re.sub(r"```.*?```", "", t, flags=re.S))
+    body = re.sub(r"^---\n.*?\n---\n", "", t, flags=re.S)  # frontmatter holds patterns, not prose
+    prose = re.sub(r"`[^`]*`", "", re.sub(r"```.*?```", "", body, flags=re.S))
     for ch, label in (("—", "em dash"), ("–", "en dash")):
         if ch in t:
             fail(f"{os.path.relpath(f, ROOT)}: {label}")
@@ -90,15 +92,36 @@ for f in docs:
         if "--" in line and not re.fullmatch(r"\s*(---|\|?[\s:|-]+\|?)\s*", line):
             fail(f"{os.path.relpath(f, ROOT)}: double hyphen: {line.strip()[:80]}")
 
-# 5. Evals
-evals = json.loads(read("evals", "evals.json"))
-if evals.get("skill_name") != NAME:
-    fail("evals.json skill_name does not match the skill name")
-for e in evals["evals"]:
-    for path in e.get("files", []):
-        if not os.path.isdir(os.path.join(ROOT, path)):
-            fail(f"eval {e['id']}: fixture {path} not found")
-print(f"evals: {len(evals['evals'])} scenarios, {sum(len(e['expectations']) for e in evals['evals'])} expectations")
+# 5. Eval cases in the claude plugin eval format (https://code.claude.com/docs/en/plugin-evals)
+PROMPT_KEYS = {"schema_version", "name", "description", "tags", "plugins", "runs", "expected_outcome", "model",
+               "max_turns", "timeout_seconds", "allowed_tools", "append_system_prompt", "env"}
+GRADER_TYPES = {"regex", "tool_used", "tool_order", "file_exists", "llm", "baseline"}
+cases = sorted(glob.glob(os.path.join(ROOT, "evals", "*", "prompt.md")))
+graders = 0
+for p in cases:
+    case = os.path.dirname(p)
+    label = os.path.basename(case)
+    t = open(p, encoding="utf-8").read()
+    m = re.match(r"^---\n(.*?)\n---\n(.*)", t, re.S)
+    keys = set(yaml.safe_load(m.group(1))) if m else set()
+    if not m or not m.group(2).strip() or keys - PROMPT_KEYS:
+        fail(f"eval {label}: prompt.md needs frontmatter with known keys and a prompt, unknown {sorted(keys - PROMPT_KEYS)}")
+    files = glob.glob(os.path.join(case, "graders", "*.md"))
+    graders += len(files)
+    for g in files:
+        gm = re.match(r"^---\n(.*?)\n---", open(g, encoding="utf-8").read(), re.S)
+        if not gm or yaml.safe_load(gm.group(1)).get("type") not in GRADER_TYPES:
+            fail(f"eval {label}: {os.path.basename(g)} has no valid grader type")
+    if not files:
+        fail(f"eval {label}: no graders")
+    if os.path.exists(os.path.join(case, "case.yaml")):
+        cy = yaml.safe_load(open(os.path.join(case, "case.yaml"), encoding="utf-8"))
+        script = (cy.get("context") or {}).get("scaffold_script")
+        if cy.get("name") != label or (script and not os.path.exists(os.path.join(case, script))):
+            fail(f"eval {label}: case.yaml name differs from the folder, or its scaffold script is missing")
+if not cases:
+    fail("no eval cases found in evals/")
+print(f"evals: {len(cases)} cases, {graders} graders")
 
 # 6. Plugin and marketplace manifests, version in CHANGELOG.md
 plugin = json.loads(read(".claude-plugin", "plugin.json"))
@@ -106,6 +129,17 @@ market = json.loads(read(".claude-plugin", "marketplace.json"))
 entries = market.get("plugins", [])
 if plugin.get("name") != NAME or [p.get("name") for p in entries] != [NAME] or entries[0].get("source") != "./":
     fail("plugin.json and marketplace.json must both name the plugin and point the entry at ./")
+# Codex reads the root plugin.json (Agent Plugins format) and .agents/plugins/marketplace.json
+# (https://developers.openai.com/codex/plugins/build, read 3 November 2026).
+portable = json.loads(read("plugin.json"))
+PORTABLE_KEYS = {"$schema", "name", "version", "description", "author", "homepage", "repository", "license",
+                 "keywords", "extensions"}
+if (portable.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json" or set(portable) - PORTABLE_KEYS
+        or portable.get("name") != NAME or portable.get("version") != plugin.get("version")):
+    fail("plugin.json must use the Agent Plugins schema, its known fields, the plugin name and the same version as .claude-plugin/plugin.json")
+codex = json.loads(read(".agents", "plugins", "marketplace.json")).get("plugins", [])
+if [p.get("name") for p in codex] != [NAME] or codex[0].get("source") != "./" or not {"policy", "category"} <= set(codex[0]):
+    fail(".agents/plugins/marketplace.json must hold one entry for the plugin with source ./, a policy and a category")
 top = re.search(r"^## \[?(\d+\.\d+\.\d+)", read("CHANGELOG.md"), re.M)
 if not top or top.group(1) != plugin.get("version"):
     fail(f"plugin.json version {plugin.get('version')} does not match the newest CHANGELOG.md entry")

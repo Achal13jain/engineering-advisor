@@ -7,7 +7,7 @@ This project is a set of instructions for an AI assistant. The skill itself cont
 - A weakness that lets repository content, issue text or a fetched web page steer the skill against the user's interest (prompt injection).
 - A real credential committed to this repository.
 
-The evaluation fixtures in `evals/files/` contain deliberately fake secrets, such as the `.env` file in `weak-ci-app`. They exist to test that the skill reports secrets without repeating them, and they are not a vulnerability.
+The evaluation fixture scripts in `evals/` (the `fixture.sh` files) contain deliberately fake secrets, such as the `.env` values in `audit-weak-ci-repo`. They exist to test that the skill reports secrets without repeating them, and they are not a vulnerability.
 
 ## Reporting a problem
 

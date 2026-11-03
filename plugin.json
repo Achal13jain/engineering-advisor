@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "engineering-advisor",
+  "version": "0.2.0",
+  "description": "Recommends proportionate engineering practices (Git workflow, testing, CI/CD, environments, deployment, security and maintenance) by classifying a software project's family, risk profile and maturity stage.",
+  "author": {
+    "name": "Achal Jain",
+    "url": "https://github.com/Achal13jain"
+  },
+  "homepage": "https://engineering-advisor.pages.dev/",
+  "repository": "https://github.com/Achal13jain/engineering-advisor",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "architecture",
+    "git",
+    "ci-cd",
+    "testing",
+    "devops",
+    "security",
+    "repository-audit"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Engineering Advisor",
+        "shortDescription": "The right amount of engineering process for your project",
+        "developerName": "Achal Jain",
+        "category": "Productivity",
+        "websiteURL": "https://engineering-advisor.pages.dev/",
+        "privacyPolicyURL": "https://github.com/Achal13jain/engineering-advisor#privacy"
+      }
+    }
+  }
+}
