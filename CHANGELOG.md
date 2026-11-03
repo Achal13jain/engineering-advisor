@@ -2,7 +2,7 @@
 
 All notable changes to this project are recorded here. Versions follow semantic versioning: a major version for changes that alter the skill's stance or remove guidance, a minor version for new guidance or families, and a patch version for corrections.
 
-## 0.2.0 - not yet released
+## 0.2.0 - 2026-11-03
 
 - Fix a contradiction in the risk profiles: Critical no longer includes "very high availability and traffic". Traffic and availability now count only through the damage a failure would cause, and each risk profile is recorded with the facts that set it and what would move it.
 - Answer narrow questions briefly: the verdict first, the reason, the alternative and the signal that would change it, instead of the full report template. The first evaluation found a simple GitFlow question answered at 1,506 words against 952 without the skill.
