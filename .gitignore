@@ -7,6 +7,9 @@ RESEARCH.md
 # Build output; release ZIPs are attached to GitHub releases instead
 dist/
 
-# Evaluation runs (skill-creator workspace) and Python caches
+# Old skill-creator evaluation workspaces and Python caches
 *engineering-advisor-workspace/
 __pycache__/
+
+# Results written by claude plugin eval
+evals/results/
