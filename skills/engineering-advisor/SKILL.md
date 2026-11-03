@@ -59,7 +59,7 @@ Label what you say: **Verified** (seen in the repository or confirmed at an offi
 Produce a short classification before recommending anything. Details and the full decision procedure are in [references/classification.md](references/classification.md).
 
 - **Family**: one of the fourteen in [references/family-playbooks.md](references/family-playbooks.md). For hybrids, name the primary family and the parts that belong to other families.
-- **Risk profile**: Low (public information, no accounts, no money), Moderate (accounts or personal data, business depends on it), High (money movement, sensitive or regulated data, contractual availability), Critical (physical harm, large financial loss or legal breach at scale).
+- **Risk profile**: Low (public information, no accounts, no money), Moderate (accounts or personal data, business depends on it), High (money movement, sensitive or regulated data, contractual availability), Critical (physical harm, large financial loss or legal breach at scale). Name the one to three facts that set it, and what would move it up or down. Traffic and team size do not raise it by themselves.
 - **Maturity stage**: 1 Prototype, 2 Pre-launch, 3 Early production, 4 Growing product or team, 5 Mature or high-scale.
 - **Release channel**: whether a bad release can be undone in minutes (web deploys) or not (stores, registries, firmware, published data).
 
@@ -80,7 +80,11 @@ For each significant recommendation, state what it is, why it fits this project,
 
 ### 5. Deliver
 
-Match the output to the objective; do not produce every possible deliverable. Use this default shape and adapt it:
+Match the output to the objective, and its length to the question; do not produce every possible deliverable.
+
+A narrow question gets a short answer. When the user asks about one decision ("do I need a staging branch?", "should we use microservices?", "set up GitFlow for my portfolio"), give the verdict in the first sentence, then the reason, the simpler or stronger alternative, and the signal that would change the answer, in a few short paragraphs. Fold the classification into one sentence and skip the plan unless the user asks for one. Keeping a Low-risk answer short is part of keeping it proportionate.
+
+For planning a project, preparing a launch or auditing a repository, use this default shape and adapt it:
 
 ```markdown
 ## Classification

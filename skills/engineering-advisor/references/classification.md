@@ -37,9 +37,22 @@ Answer these from the repository and the conversation first; ask the user only f
 | Low | Public information only, no user accounts, no money; failure is embarrassing but cheap. | Brand website, portfolio, documentation site, prototype with test data. | The essential floor: version control, protected main, CI that builds, automated deploys with rollback, dependency updates. |
 | Moderate | User accounts or personal data; business workflows depend on it; outages cost money or trust. | Full-stack app, internal business tool, community site. | Integration and authorization tests, backups with tested restores, error tracking, previews or staging. |
 | High | Money movement; sensitive personal data such as health, financial or children's data; regulated data; contractual availability. | Online shop, B2B SaaS with service levels, clinic booking, payroll. | Required reviews, production approval or progressive delivery, point-in-time recovery, SLOs, incident process, audit logs, security testing. |
-| Critical | Failure can cause physical harm, large financial loss or legal breach at scale, or very high availability and traffic apply. | Payment processor, medical device software, industrial control. | Progressive delivery with automatic rollback, disaster recovery drills, independent security review, formal change control for irreversible operations. |
+| Critical | Failure can cause physical harm, large financial loss or legal breach at scale. | Payment processor, medical device software, industrial control. | Progressive delivery with automatic rollback, disaster recovery drills, independent security review, formal change control for irreversible operations. |
 
-Assign the profile from the riskiest thing the system does, not from its size or traffic. Write down the reason.
+Assign the profile from the riskiest thing the system does, not from its size or traffic. Traffic and availability count only through the damage a failure would cause: a contractual availability commitment makes a system at least High, and an outage that would itself cause large financial loss or harm makes it Critical. High traffic on its own raises the maturity stage and may point to the distributed systems family, not to a higher risk profile.
+
+Record the drivers with the profile: the one to three facts that set it, taken from these factors, and what would move it up or down.
+
+| Driver | Raises the profile when |
+|---|---|
+| Money | The system takes, holds or moves money, or a failure costs customers money. |
+| Data sensitivity | It stores personal data (Moderate), or health, financial, children's or other sensitive data (High). |
+| Regulation | A law, regulator or contract sets obligations for the data or the service. |
+| Availability commitment | Customers have a contractual or safety-related availability promise. |
+| Harm and blast radius | A failure could injure people, damage equipment, or affect many customers or other organizations at once. |
+| Reversibility | Mistakes cannot be undone: shipped binaries, firmware, published packages or figures, destroyed data. |
+
+For example: "High, because it takes card payments through a provider and stores customers' order history; it would become Critical only if it moved money between accounts itself."
 
 Recovery objectives, agreed with the business even roughly:
 - **Recovery time objective (RTO)**: how long the system can stay in recovery before the damage becomes unacceptable.

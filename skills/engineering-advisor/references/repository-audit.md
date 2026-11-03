@@ -5,6 +5,7 @@
 - What files signal
 - Classification evidence
 - Audit checklist with severity
+- Second check with a fresh reviewer
 - Anti-patterns to detect
 - Gap report format
 
@@ -54,6 +55,26 @@ Let the code confirm or correct the user's description:
 
 Rate each finding: **Blocker** (fix before launch or now, real current risk), **Important** (fix soon), **Improvement** (when a signal appears). Severity depends on the risk profile and stage; a missing restore test is a Blocker for a High-risk app in production and an Improvement for a prototype.
 
+Give each finding a confidence, so the reader knows what to check first:
+- **Verified**: you saw it. Cite the file and line, or the command and what it showed.
+- **Likely**: strong indirect evidence, such as a deploy section in the README with no pipeline file. Say what would confirm it.
+- **Not verified**: it depends on something the repository cannot show, such as branch protection, hosting settings or backups. List it under "Not verified" instead of as a gap, unless the user confirms it.
+
+Before reporting a gap, rule out a false alarm:
+- Look for an equivalent: Renovate instead of Dependabot, tests outside a `test` folder, CI in another system, a hosted service that makes backups.
+- Check whether the practice is needed at this risk profile and stage. A missing practice that the project does not need yet is not a gap; mention it under Later at most.
+- When the evidence is a comment or a README claim rather than code or configuration, treat it as Likely, not Verified.
+
+## Second check with a fresh reviewer
+
+A reviewer who has followed the whole conversation tends to confirm its own conclusions. When the host can start a subagent with a fresh context, use one to recheck every Blocker before reporting it:
+
+1. Give the subagent only the repository path and, for each Blocker, the finding and its evidence. Leave out the conversation and your reasoning.
+2. Ask it to confirm, correct or reject each finding from the files alone, read-only, and to quote the line it relied on.
+3. Report confirmed findings as they are. Lower a finding it could not confirm to Likely, or drop it if the evidence was wrong, and say in the report that a second check was made.
+
+This step is optional. When the host cannot start subagents, reread the cited lines for each Blocker yourself before reporting it.
+
 - **Repository**: README explains run, test and deploy; lockfile committed; one command builds from a clean checkout; secrets not tracked; example environment file lists required variables; license for public code.
 - **Git**: main protected with pull requests and required checks; no permanent branches without purpose; no environment branches; short-lived branches; conventions for commits and tags where releases are versioned.
 - **Testing**: tests exist for the failures that would hurt most; integration tests use a real database; authorization and tenant isolation tested where relevant; family-specific checks present; flaky tests handled.
@@ -89,7 +110,13 @@ Family, risk profile, stage, release channel, with the evidence found.
 Practices that fit and should be kept.
 
 ## Gaps
-| Severity | Area | Finding (with file path) | Why it matters | Recommended fix | Effort |
+Ordered by severity, then by effort. One block per finding:
+
+**Important, Testing: the refund path has no tests** (Verified)
+- Evidence: `src/refunds.ts` has no test file, and the `test` script in `package.json` line 8 runs only the formatting helpers' tests.
+- Why it matters: what could go wrong for this project, at its risk profile.
+- Fix: the recommended change, with its effort (small, medium or large).
+- Check: how to confirm the fix works, such as a failing test that passes after the change.
 
 ## Plan
 Essential now, Next, Later (with the trigger for each Later item).
